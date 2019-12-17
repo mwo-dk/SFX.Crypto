@@ -5,7 +5,7 @@ on:  push
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v1
@@ -17,5 +17,5 @@ jobs:
       run: dotnet build --configuration Release
     - name: Test
       run: | 
-        dotnet test ./tst/Crypto.CSharp.Tests/Crypto.CSharp.Tests.csproj
-        dotnet test ./tst/Crypto.Tests/Crypto.Tests.fsproj
+        dotnet test ./tst/Crypto.Windows.CSharp.Tests/Crypto.Windows.CSharp.Tests.csproj
+        dotnet test ./tst/Crypto.CSharp.Tests/Crypto.Windows.Tests.fsproj

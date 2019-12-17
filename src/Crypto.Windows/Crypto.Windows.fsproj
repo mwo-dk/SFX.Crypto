@@ -11,6 +11,8 @@
     <AssemblyVersion>$(Version)</AssemblyVersion>
     <IsPackable>true</IsPackable>
 
+    <RuntimeIdentifiers>win-x86;win-x64</RuntimeIdentifiers>
+
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Authors>Michael W. Olesen</Authors>
     <Company>-</Company>
