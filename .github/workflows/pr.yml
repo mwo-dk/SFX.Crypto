@@ -1,0 +1,33 @@
+name: .NET Core
+
+on: pull_request
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.100
+    - name: Build 
+      run: dotnet build --configuration Release
+    - name: Test
+      run: |
+        dotnet test ./tst/Crypto.CSharp.Tests/Crypto.CSharp.Tests.csproj
+        dotnet test ./tst/Crypto.Tests/Crypto.Tests.fsproj
+    - name: Build C# NuGet Packages
+      run: |
+        dotnet pack ./src/Crypto.CSharp/Crypto.CSharp.csproj --configuration Release -o ./nuget
+    - name: Build F# Nuget Packages
+      run: |
+        dotnet pack ./src/Crypto/Crypto.fsproj --configuration Release -o ./nuget
+    - name: Deploy NuGet C# Packages
+      run: |
+        dotnet nuget push /home/runner/work/SFX.Crypto/SFX.Crypto/nuget/SFX.Crypto.CSharp.*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
+    #- name: Deploy NuGet F# Packages
+    #  run: |
+    #    dotnet nuget push /home/runner/work/SFX.Crypto/SFX.Crypto/nuget/SFX.Crypto.*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}

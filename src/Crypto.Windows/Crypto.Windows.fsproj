@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <AssemblyName>SFX.Crypto</AssemblyName>
+
+    <RootNamespace>SFX.Crypto.Windows</RootNamespace>
+    <PackageId>SFX.Crypto.Windows</PackageId>
+    <Version>$(Version)</Version>
+    <FileVersion>$(Version)</FileVersion>
+    <AssemblyVersion>$(Version)</AssemblyVersion>
+    <IsPackable>true</IsPackable>
+
+    <RuntimeIdentifiers>win-x86;win-x64</RuntimeIdentifiers>
+
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Authors>Michael W. Olesen</Authors>
+    <Company>-</Company>
+    <Description>Wrapper of generic crypto- and hashing libraries that work on Windows only in F#</Description>
+    <Copyright>Michael W. Olesen</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/mwo-dk/SFX.Crypto</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/mwo-dk/SFX.Crypto</RepositoryUrl>
+    <PackageIcon>dingir.png</PackageIcon>
+    <PackageTags>crypto hash windows F#</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Library.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="dingir.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SFX.ROP" Version="1.0.15" />
+  </ItemGroup>
+</Project>
