@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <AssemblyName>SFX.Crypto.Windows.CSharp</AssemblyName>
+
+    <RootNamespace>SFX.Crypto.Windows.CSharp</RootNamespace>
+    <PackageId>SFX.Crypto.Windows.CSharp</PackageId>
+    <Version>$(Version)</Version>
+    <FileVersion>$(Version)</FileVersion>
+    <AssemblyVersion>$(Version)</AssemblyVersion>
+    <IsPackable>true</IsPackable>
+
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Authors>Michael W. Olesen</Authors>
+    <Company>-</Company>
+    <Description>Wrapper of generic crypto- and hashing libraries that work on Windows only</Description>
+    <Copyright>Michael W. Olesen</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/mwo-dk/SFX.Crypto</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/mwo-dk/SFX.Crypto</RepositoryUrl>
+    <PackageIcon>dingir.png</PackageIcon>
+    <PackageTags>crypto hash windows</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="dingir.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SFX.ROP.CSharp" Version="1.0.15" />
+    <PackageReference Include="System.Security.Cryptography.Cng" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Crypto.CSharp\Crypto.CSharp.csproj" />
+  </ItemGroup>
+</Project>
