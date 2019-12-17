@@ -18,4 +18,4 @@ jobs:
     - name: Test
       run: | 
         dotnet test ./tst/Crypto.Windows.CSharp.Tests/Crypto.Windows.CSharp.Tests.csproj
-        dotnet test ./tst/Crypto.CSharp.Tests/Crypto.Windows.Tests.fsproj
+        dotnet test ./tst/Crypto.Windows.Tests/Crypto.Windows.Tests.fsproj
