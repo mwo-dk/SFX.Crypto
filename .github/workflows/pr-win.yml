@@ -27,7 +27,7 @@ jobs:
         dotnet pack ./src/Crypto.Windows/Crypto.Windows.fsproj --configuration Release -o ./nuget
     - name: Deploy NuGet C# Packages
       run: |
-        dotnet nuget push /home/runner/work/SFX.Crypto/SFX.Crypto/nuget/SFX.Crypto.Windows.CSharp.*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
+        dotnet nuget push D:\a\SFX.Crypto\SFX.Crypto\nuget\SFX.Crypto.Windows.CSharp.*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
     #- name: Deploy NuGet F# Packages
     #  run: |
-    #    dotnet nuget push /home/runner/work/SFX.Crypto/SFX.Crypto/nuget/SFX.Windows.Crypto.*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
+    #    dotnet nuget push D:\a\SFX.Crypto\SFX.Crypto\nuget\SFX.Windows.Crypto.*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
