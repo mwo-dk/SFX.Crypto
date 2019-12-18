@@ -36,4 +36,8 @@
   <ItemGroup>
     <PackageReference Include="SFX.ROP" Version="1.0.15" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Crypto.Windows.CSharp\Crypto.Windows.CSharp.csproj" />
+  </ItemGroup>
 </Project>
