@@ -18,19 +18,21 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".solution", ".solution", "{5A505C8E-E29D-4073-873B-2474D9E26A5F}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		.github\workflows\build-win.yml = .github\workflows\build-win.yml
 		.github\workflows\build.yml = .github\workflows\build.yml
 		src\Directory.Build.props = src\Directory.Build.props
+		.github\workflows\pr-win.yml = .github\workflows\pr-win.yml
 		.github\workflows\pr.yml = .github\workflows\pr.yml
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Crypto.Windows", "src\Crypto.Windows\Crypto.Windows.fsproj", "{27548C80-6BD9-4E3A-B505-AE85CF663B53}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Crypto.Windows", "src\Crypto.Windows\Crypto.Windows.fsproj", "{27548C80-6BD9-4E3A-B505-AE85CF663B53}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypto.Windows.CSharp", "src\Crypto.Windows.CSharp\Crypto.Windows.CSharp.csproj", "{77F49EF9-B2D3-4FFE-B167-6B9D2FCE5E34}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crypto.Windows.CSharp", "src\Crypto.Windows.CSharp\Crypto.Windows.CSharp.csproj", "{77F49EF9-B2D3-4FFE-B167-6B9D2FCE5E34}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Crypto.Windows.Tests", "tst\Crypto.Windows.Tests\Crypto.Windows.Tests.fsproj", "{8797E732-8ACD-44B0-B8B9-E7824C729484}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Crypto.Windows.Tests", "tst\Crypto.Windows.Tests\Crypto.Windows.Tests.fsproj", "{8797E732-8ACD-44B0-B8B9-E7824C729484}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crypto.Windows.CSharp.Tests", "tst\Crypto.Windows.CSharp.Tests\Crypto.Windows.CSharp.Tests.csproj", "{6F5CAF0C-C705-4346-8641-DFB0C87C3D39}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crypto.Windows.CSharp.Tests", "tst\Crypto.Windows.CSharp.Tests\Crypto.Windows.CSharp.Tests.csproj", "{6F5CAF0C-C705-4346-8641-DFB0C87C3D39}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
