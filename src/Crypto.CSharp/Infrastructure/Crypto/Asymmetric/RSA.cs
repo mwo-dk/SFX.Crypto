@@ -183,4 +183,56 @@ namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Asymmetric.RSA
         /// </summary>
         public RSACryptoServiceProviderBasedCryptoService() : base(new RSACryptoSvcProvider()) { }
     }
+
+    /// <summary>
+    /// Interface describing the capability to generate private and public keys
+    /// </summary>
+    public interface IRandomKeyPairProvider
+    {
+        /// <summary>
+        /// Generates a random key pair for RSA encryption and decryption
+        /// </summary>
+        /// <returns></returns>
+        Result<(IEncryptionKey PublicKey, IDecryptionKey PrivateKey)> GenerateKeyPair();
+    }
+
+    /// <summary>
+    /// Implements <see cref="IRandomKeyPairProvider"/>
+    /// </summary>
+    public sealed class RandomKeyPairProvider : IRandomKeyPairProvider
+    {
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="algorithmProvider">The <see cref="IRSAProvider"/></param>
+        public RandomKeyPairProvider(IRSAProvider algorithmProvider) =>
+            AlgorithmProvider = algorithmProvider ?? throw new ArgumentNullException(nameof(algorithmProvider));
+
+        internal IRSAProvider AlgorithmProvider { get; }
+
+        /// <inheritdoc/>
+        public Result<(IEncryptionKey PublicKey, IDecryptionKey PrivateKey)> GenerateKeyPair()
+        {
+            System.Security.Cryptography.RSA algorithm = default;
+            try
+            {
+                var success = false;
+                Exception error = default;
+                (success, error, algorithm) = AlgorithmProvider.GetAlgorithm();
+                if (!success)
+                    return Fail<(IEncryptionKey, IDecryptionKey)>(error);
+                var publicKey = new EncryptionKey(algorithm.ExportRSAPublicKey()) as IEncryptionKey;
+                var privateKey = new DecryptionKey(algorithm.ExportRSAPrivateKey()) as IDecryptionKey;
+                return Succeed((publicKey, privateKey));
+            }
+            catch (Exception error)
+            {
+                return Fail<(IEncryptionKey, IDecryptionKey)>(error);
+            }
+            finally
+            {
+                algorithm?.Dispose();
+            }
+        }
+    }
 }
