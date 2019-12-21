@@ -39,12 +39,8 @@ namespace Crypto.CSharp.Tests.Infrastructure.Crypto.Asymmetric.RSA
 
         #region Type test
         [Fact]
-        public void CryptoServiceImplementsICryptoService() =>
-            Assert.True(typeof(ICryptoService).IsAssignableFrom(typeof(RSACryptoServiceProviderBasedCryptoService)));
-
-        [Fact]
         public void CryptoServiceIsSealed() =>
-            Assert.True(typeof(RSACryptoServiceProviderBasedCryptoService).IsSealed);
+            Assert.True(typeof(Service).IsSealed);
         #endregion
 
         #region Encrypt

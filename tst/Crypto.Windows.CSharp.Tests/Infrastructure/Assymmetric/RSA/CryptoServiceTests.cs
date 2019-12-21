@@ -1,6 +1,7 @@
 ﻿using FakeItEasy;
 using FsCheck;
 using FsCheck.Xunit;
+using SFX.Crypto.CSharp.Infrastructure.Crypto.Assymmetric.RSA;
 using SFX.Crypto.CSharp.Infrastructure.Crypto.Asymmetric.RSA;
 using SFX.Crypto.CSharp.Model.Crypto.Asymmetric.RSA;
 using System;

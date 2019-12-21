@@ -1,9 +1,6 @@
 ﻿using FsCheck;
 using FsCheck.Xunit;
 using SFX.Crypto.CSharp.Model.Shared;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 using static Crypto.CSharp.Tests.TestHelpers;
 
@@ -86,5 +83,16 @@ namespace Crypto.CSharp.Tests.Model
 
         public sealed class HashTests : GenericTest<Hash, IHash, IValidatable> { }
         public sealed class UnhashedPayloadTests : GenericTest<UnhashedPayload, IUnhashedPayload, IValidatable> { }
+    }
+
+    namespace Signature
+    {
+        using SFX.Crypto.CSharp.Model.Signature;
+
+        public sealed class PayloadTests : GenericTest<Payload, IPayload, IValidatable> { }
+        public sealed class UnignedHashTests : GenericTest<Hash, IHash, IValidatable> { }
+        public sealed class SignatureTests : GenericTest<Signature, ISignature, IValidatable> { }
+        public sealed class SigningKeyTests : GenericTest<SigningKey, ISigningKey, IValidatable> { }
+        public sealed class VerificationKeyTests : GenericTest<VerificationKey, IVerificationKey, IValidatable> { }
     }
 }

@@ -1,9 +1,10 @@
-﻿using SFX.ROP.CSharp;
+﻿using SFX.Crypto.CSharp.Infrastructure.Crypto.Asymmetric.RSA;
+using SFX.ROP.CSharp;
 using System;
 using System.Security.Cryptography;
 using static SFX.ROP.CSharp.Library;
 
-namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Asymmetric.RSA
+namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Assymmetric.RSA
 {
     /// <summary>
     /// Implements <see cref="IRSAProvider"/> using <see cref="RSACng"/>
@@ -22,17 +23,5 @@ namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Asymmetric.RSA
                 return Fail<System.Security.Cryptography.RSA>(error);
             }
         }
-    }
-
-    /// <summary>
-    /// Specialization of <see cref="CryptoServiceBase"/> using <see cref="RSACng"/>
-    /// </summary>
-    public sealed class RSACngBasedCryptoService : CryptoServiceBase
-    {
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="logger">The logger</param>
-        public RSACngBasedCryptoService() : base(new RSACngProvider()) { }
     }
 }

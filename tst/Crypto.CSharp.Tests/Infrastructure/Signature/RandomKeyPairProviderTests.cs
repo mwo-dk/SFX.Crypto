@@ -1,12 +1,13 @@
 ﻿using FakeItEasy;
 using SFX.Crypto.CSharp.Infrastructure.Crypto.Asymmetric.RSA;
-using SFX.Crypto.CSharp.Model.Crypto.Asymmetric.RSA;
+using SFX.Crypto.CSharp.Model.Signature;
 using System;
 using Xunit;
 using static FakeItEasy.A;
 using static SFX.ROP.CSharp.Library;
+using RandomKeyPairProvider = SFX.Crypto.CSharp.Infrastructure.Signature.RandomKeyPairProvider;
 
-namespace Crypto.CSharp.Tests.Infrastructure.Crypto.Asymmetric.RSA
+namespace Crypto.CSharp.Tests.Infrastructure.Signature
 {
     public sealed class RandomKeyPairProviderTests
     {
@@ -28,7 +29,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Crypto.Asymmetric.RSA
         #region Type tests
         [Fact]
         public void RandomKeyPairProviderImplementsIRandomKeyPairProvider() =>
-            Assert.True(typeof(IRandomKeyPairProvider<EncryptionKey, DecryptionKey>).IsAssignableFrom(typeof(RandomKeyPairProvider)));
+            Assert.True(typeof(IRandomKeyPairProvider<SigningKey, VerificationKey>).IsAssignableFrom(typeof(RandomKeyPairProvider)));
 
         [Fact]
         public void RandomKeyPairProviderIsSealed() =>
