@@ -1,8 +1,6 @@
 ﻿using FakeItEasy;
 using SFX.Crypto.CSharp.Infrastructure.Hash.SHA512;
 using SFX.Crypto.CSharp.Model.Hash.SHA512;
-using SFX.ROP.CSharp;
-using System;
 using Xunit;
 using static FakeItEasy.A;
 using static SFX.ROP.CSharp.Library;

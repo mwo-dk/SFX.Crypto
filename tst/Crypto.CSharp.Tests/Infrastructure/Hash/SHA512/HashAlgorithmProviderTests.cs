@@ -1,8 +1,6 @@
 ﻿using SFX.Crypto.CSharp.Infrastructure.Hash.SHA512;
 using SFX.Utils.Infrastructure;
-using System;
 using Xunit;
-using static FakeItEasy.A;
 
 namespace Crypto.CSharp.Tests.Infrastructure.Hash.SHA512
 {

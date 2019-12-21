@@ -7,53 +7,6 @@ using static SFX.ROP.CSharp.Library;
 namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Asymmetric.RSA
 {
     /// <summary>
-    /// Interface describing the capability of serving <see cref="EncryptionKey"/>s
-    /// </summary>
-    public interface IEncryptionKeyProvider
-    {
-        /// <summary>
-        /// Fetches a <see cref="IEncryptionKey"/>
-        /// </summary>
-        /// <returns></returns>
-        Result<IEncryptionKey> GetEncryptionKey();
-    }
-
-    /// <summary>
-    /// Interface describing the capability of serving <see cref="DecryptionKey"/>s
-    /// </summary>
-    public interface IDecryptionKeyProvider
-    {
-        /// <summary>
-        /// Fetches a <see cref="IDecryptionKey"/>
-        /// </summary>
-        /// <returns></returns>
-        Result<IDecryptionKey> GetDecryptionKey();
-    }
-
-    /// <summary>
-    /// Interface describing the capability to encrypt and unencrypt data based on
-    /// provided keys
-    /// </summary>
-    public interface ICryptoService
-    {
-        /// <summary>
-        /// Encrypts the provided <paramref name="payload"/> based on the provided <paramref name="key"/>
-        /// </summary>
-        /// <param name="payload">The <see cref="IUnencryptedPayload"/> to encrypt</param>
-        /// <param name="key">The <see cref="IEncryptionKey"/> utilized</param>
-        /// <returns><paramref name="payload"/> encrypted</returns>
-        Result<IEncryptedPayload> Encrypt(IUnencryptedPayload payload, IEncryptionKey key);
-
-        /// <summary>
-        /// Decrypts the provided <paramref name="payload"/> based on the provided <paramref name="key"/>
-        /// </summary>
-        /// <param name="payload">The <see cref="IEncryptedPayload"/> to decrypt</param>
-        /// <param name="key">The <see cref="IDecryptionSecret"/> to utilize</param>
-        /// <returns><paramref name="payload"/> decrypted</returns>
-        Result<IUnencryptedPayload> Decrypt(IEncryptedPayload payload, IDecryptionKey key);
-    }
-
-    /// <summary>
     /// Implements <see cref="ICryptoService"/> utilizing RSA
     /// </summary>
     public abstract class CryptoServiceBase : ICryptoService
@@ -140,47 +93,5 @@ namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Asymmetric.RSA
                 algorithm?.Dispose();
             }
         }
-    }
-
-    /// <summary>
-    /// Interface providing the actual utilized RSA algorithm
-    /// </summary>
-    public interface IRSAProvider
-    {
-        /// <summary>
-        /// Provides an instance of the RSA algorithm
-        /// </summary>
-        /// <returns></returns>
-        Result<System.Security.Cryptography.RSA> GetAlgorithm();
-    }
-
-    /// <summary>
-    /// Implements <see cref="IRSAProvider"/> using <see cref="RSACryptoServiceProvider"/>
-    /// </summary>
-    public sealed class RSACryptoSvcProvider : IRSAProvider
-    {
-        /// <inheritdoc/>
-        public Result<System.Security.Cryptography.RSA> GetAlgorithm()
-        {
-            try
-            {
-                return Succeed(new RSACryptoServiceProvider() as System.Security.Cryptography.RSA);
-            }
-            catch (Exception error)
-            {
-                return Fail<System.Security.Cryptography.RSA>(error);
-            }
-        }
-    }
-
-    /// <summary>
-    /// Specialization of <see cref="CryptoServiceBase"/> using <see cref="RSACryptoServiceProvider"/>
-    /// </summary>
-    public sealed class RSACryptoServiceProviderBasedCryptoService : CryptoServiceBase
-    {
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public RSACryptoServiceProviderBasedCryptoService() : base(new RSACryptoSvcProvider()) { }
     }
 }

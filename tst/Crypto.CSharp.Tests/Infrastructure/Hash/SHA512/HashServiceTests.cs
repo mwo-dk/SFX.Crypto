@@ -3,7 +3,6 @@ using FsCheck;
 using FsCheck.Xunit;
 using SFX.Crypto.CSharp.Infrastructure.Hash.SHA512;
 using SFX.Crypto.CSharp.Model.Hash.SHA512;
-using SFX.ROP.CSharp;
 using System;
 using System.Text;
 using Xunit;

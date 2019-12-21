@@ -10,31 +10,6 @@ using static SFX.ROP.CSharp.Library;
 namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Aes
 {
     /// <summary>
-    /// Interface describing the capability to encrypt and unencrypt data based on
-    /// provided keys
-    /// </summary>
-    public interface ICryptoService
-    {
-        /// <summary>
-        /// Encrypts the provided <paramref name="payload"/> based on the provided <paramref name="secret"/> and <paramref name="salt"/>
-        /// </summary>
-        /// <param name="payload">The <see cref="IUnencryptedPayload"/> to encrypt</param>
-        /// <param name="secret">The <see cref="ISecret"/> utilized</param>
-        /// <param name="salt">The <see cref="ISalt"/> utilized</param>
-        /// <returns><paramref name="payload"/> encrypted</returns>
-        Result<IEncryptedPayload> Encrypt(IUnencryptedPayload payload, ISecret secret, ISalt salt);
-
-        /// <summary>
-        /// Decrypts the provided <paramref name="payload"/> based on the provided <paramref name="secret"/> and <paramref name="salt"/>
-        /// </summary>
-        /// <param name="payload">The <see cref="IEncryptedPayload"/> to decrypt</param>
-        /// <param name="secret">The <see cref="ISecret"/> utilized</param>
-        /// <param name="salt">The <see cref="ISalt"/> to utilize</param>
-        /// <returns><paramref name="payload"/> decrypted</returns>
-        Result<IUnencryptedPayload> Decrypt(IEncryptedPayload payload, ISecret secret, ISalt salt);
-    }
-
-    /// <summary>
     /// Implements <see cref="ICryptoService"/>
     /// </summary>
     public abstract class AesCryptoServiceBase : ICryptoService
@@ -155,77 +130,5 @@ namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Aes
                 algorithm?.Dispose();
             }
         }
-    }
-
-    /// <summary>
-    /// Interface providing the actual utilized Aes algorithm
-    /// </summary>
-    public interface IAesProvider
-    {
-        /// <summary>
-        /// Provides an instance of the Aes algorithm
-        /// </summary>
-        /// <returns></returns>
-        Result<System.Security.Cryptography.Aes> GetAlgorithm();
-    }
-
-    /// <summary>
-    /// Implements <see cref="IAesProvider"/> using <see cref="RSACryptoServiceProvider"/>
-    /// </summary>
-    public sealed class AesCryptoSvcProvider : IAesProvider
-    {
-        /// <inheritdoc/>
-        public Result<System.Security.Cryptography.Aes> GetAlgorithm()
-        {
-            try
-            {
-                return Succeed(new AesCryptoServiceProvider() as System.Security.Cryptography.Aes);
-            }
-            catch (Exception error)
-            {
-                return Fail<System.Security.Cryptography.Aes>(error);
-            }
-        }
-    }
-
-    /// <summary>
-    /// Specialization of <see cref="AesCryptoServiceBase"/> using <see cref="AesCryptoServiceProvider"/>
-    /// </summary>
-    public sealed class AesCryptoServiceProviderBasedCryptoService : AesCryptoServiceBase
-    {
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public AesCryptoServiceProviderBasedCryptoService() : base(new AesCryptoSvcProvider()) { }
-    }
-
-    /// <summary>
-    /// Implements <see cref="IAesProvider"/> using <see cref="AesCng"/>
-    /// </summary>
-    public sealed class AesManagedProvider : IAesProvider
-    {
-        /// <inheritdoc/>
-        public Result<System.Security.Cryptography.Aes> GetAlgorithm()
-        {
-            try
-            {
-                return Succeed(new AesManaged() as System.Security.Cryptography.Aes);
-            }
-            catch (Exception error)
-            {
-                return Fail<System.Security.Cryptography.Aes>(error);
-            }
-        }
-    }
-
-    /// <summary>
-    /// Specialization of <see cref="AesCryptoServiceBase"/> using <see cref="AesManaged"/>
-    /// </summary>
-    public sealed class AesManagedBasedCryptoService : AesCryptoServiceBase
-    {
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public AesManagedBasedCryptoService() : base(new AesManagedProvider()) { }
     }
 }
