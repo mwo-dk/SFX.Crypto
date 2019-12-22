@@ -1,4 +1,5 @@
 ﻿using SFX.Crypto.CSharp.Model.Crypto.Asymmetric.RSA;
+using System.Security.Cryptography;
 
 namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Asymmetric.RSA
 {
@@ -12,9 +13,9 @@ namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Asymmetric.RSA
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="algorithmProvider">The <see cref="IRSAProvider"/></param>
-        public RandomKeyPairProvider(IRSAProvider algorithmProvider) :
-            base(algorithmProvider, x => new EncryptionKey(x), x => new DecryptionKey(x))
-        { }
+        public RandomKeyPairProvider() :
+            base(x => new EncryptionKey(x), x => new DecryptionKey(x)) =>
+            RandomKeyPairProviderExtensions
+                .WithAlgorithm<RandomKeyPairProvider, EncryptionKey, DecryptionKey>(this, new RSACryptoServiceProvider());
     }
 }

@@ -6,26 +6,22 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using static SFX.ROP.CSharp.Library;
+using static System.Threading.Interlocked;
 
 namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Aes
 {
     /// <summary>
     /// Implements <see cref="ICryptoService"/>
     /// </summary>
-    public abstract class AesCryptoServiceBase : ICryptoService
+    public sealed class CryptoService : ICryptoService, IDisposable
     {
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="aesProvider">The <see cref="IAesProvider"/> utilized</param>
-        public AesCryptoServiceBase(IAesProvider aesProvider) =>
-            AesProvider = aesProvider ?? throw new ArgumentNullException(nameof(aesProvider));
-
-        internal IAesProvider AesProvider { get; }
-
         /// <inheritdoc/>
         public Result<IEncryptedPayload> Encrypt(IUnencryptedPayload payload, ISecret secret, ISalt salt)
         {
+            if (IsDisposed())
+                return Fail<IEncryptedPayload>(new ObjectDisposedException(typeof(CryptoService).Name));
+            if (Algorithm is null)
+                return Fail<IEncryptedPayload>(new InvalidOperationException("CryptoService is not initialized"));
             if (payload is null)
                 return Fail<IEncryptedPayload>(new ArgumentNullException(nameof(payload)));
             if (!payload.IsValid())
@@ -39,22 +35,13 @@ namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Aes
             if (!salt.IsValid())
                 return Fail<IEncryptedPayload>(new ArgumentException(nameof(salt)));
 
-            System.Security.Cryptography.Aes algorithm = default;
             try
             {
-                var success = false;
-                Exception error = default;
-                (success, error, algorithm) = AesProvider.GetAlgorithm();
-                if (!success)
-                    return Fail<IEncryptedPayload>(error);
-                if (algorithm is null)
-                    return Fail<IEncryptedPayload>(new NullReferenceException("Error fetching algorithm - algorithm provided is null"));
-
-                algorithm.Padding = PaddingMode.PKCS7;
-                algorithm.Mode = CipherMode.CBC;
-                algorithm.Key = secret.Value;
-                algorithm.IV = salt.Value;
-                using var encryptor = algorithm.CreateEncryptor();
+                Algorithm.Padding = PaddingMode.PKCS7;
+                Algorithm.Mode = CipherMode.CBC;
+                Algorithm.Key = secret.Value;
+                Algorithm.IV = salt.Value;
+                using var encryptor = Algorithm.CreateEncryptor();
                 using var ms = new MemoryStream();
                 using var cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write);
                 using var writer = new BinaryWriter(cs);
@@ -67,15 +54,15 @@ namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Aes
             {
                 return Fail<IEncryptedPayload>(error);
             }
-            finally
-            {
-                algorithm?.Dispose();
-            }
         }
 
         /// <inheritdoc/>
         public Result<IUnencryptedPayload> Decrypt(IEncryptedPayload payload, ISecret secret, ISalt salt)
         {
+            if (IsDisposed())
+                return Fail<IUnencryptedPayload>(new ObjectDisposedException(typeof(CryptoService).Name));
+            if (Algorithm is null)
+                return Fail<IUnencryptedPayload>(new InvalidOperationException("CryptoService is not initialized"));
             if (payload is null)
                 return Fail<IUnencryptedPayload>(new ArgumentNullException(nameof(payload)));
             if (!payload.IsValid())
@@ -89,22 +76,13 @@ namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Aes
             if (!salt.IsValid())
                 return Fail<IUnencryptedPayload>(new ArgumentException(nameof(salt)));
 
-            System.Security.Cryptography.Aes algorithm = default;
             try
             {
-                var success = false;
-                Exception error = default;
-                (success, error, algorithm) = AesProvider.GetAlgorithm();
-                if (!success)
-                    return Fail<IUnencryptedPayload>(error);
-                if (algorithm is null)
-                    return Fail<IUnencryptedPayload>(new NullReferenceException("Error fetching algorithm - algorithm provided is null"));
-
-                algorithm.Padding = PaddingMode.PKCS7;
-                algorithm.Mode = CipherMode.CBC;
-                algorithm.Key = secret.Value;
-                algorithm.IV = salt.Value;
-                using var encryptor = algorithm.CreateDecryptor();
+                Algorithm.Padding = PaddingMode.PKCS7;
+                Algorithm.Mode = CipherMode.CBC;
+                Algorithm.Key = secret.Value;
+                Algorithm.IV = salt.Value;
+                using var encryptor = Algorithm.CreateDecryptor();
                 using var ms = new MemoryStream(payload.Value);
                 using var cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Read);
                 using var reader = new BinaryReader(cs);
@@ -125,10 +103,34 @@ namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Aes
             {
                 return Fail<IUnencryptedPayload>(error);
             }
-            finally
-            {
-                algorithm?.Dispose();
-            }
+        }
+
+        private System.Security.Cryptography.Aes Algorithm;
+
+        internal CryptoService WithAlgorihm(System.Security.Cryptography.Aes algorithm)
+        {
+            if (IsDisposed())
+                throw new ObjectDisposedException(typeof(CryptoService).Name);
+
+            if (!(Algorithm is null) && !ReferenceEquals(Algorithm, algorithm))
+                Algorithm.Dispose();
+
+            Algorithm = algorithm;
+            return this;
+        }
+        public CryptoService WithAesCryptoServiceProvider() =>
+            WithAlgorihm(new AesCryptoServiceProvider());
+        public CryptoService WithAesManaged() =>
+            WithAlgorihm(new AesManaged());
+
+        internal long DisposeCount;
+        private bool IsDisposed() => 0L < Read(ref DisposeCount);
+        public void Dispose()
+        {
+            if (1L < Increment(ref DisposeCount))
+                return;
+
+            Algorithm?.Dispose();
         }
     }
 }

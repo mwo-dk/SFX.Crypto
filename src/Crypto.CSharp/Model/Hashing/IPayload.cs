@@ -1,11 +1,11 @@
 ﻿using SFX.Crypto.CSharp.Model.Shared;
 
-namespace SFX.Crypto.CSharp.Model.Hash.SHA512
+namespace SFX.Crypto.CSharp.Model.Hashing
 {
     /// <summary>
     /// Interface describing a encryption key
     /// </summary>
-    public interface IUnhashedPayload : IValidatable
+    public interface IPayload : IValidatable
     {
         /// <summary>
         /// The actual payload value

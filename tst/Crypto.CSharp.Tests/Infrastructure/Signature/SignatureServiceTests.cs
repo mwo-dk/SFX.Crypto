@@ -1,9 +1,8 @@
 ﻿using FakeItEasy;
 using FsCheck;
 using FsCheck.Xunit;
-using SFX.Crypto.CSharp.Infrastructure.Hash.SHA512;
+using SFX.Crypto.CSharp.Infrastructure.Hashing;
 using SFX.Crypto.CSharp.Infrastructure.Signature;
-using SFX.Crypto.CSharp.Model.Hash.SHA512;
 using SFX.Crypto.CSharp.Model.Signature;
 using System;
 using System.Text;
@@ -16,7 +15,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
     {
         #region Members
         private readonly RandomKeyPairProvider _keyProvider;
-        private readonly IPayload _payload;
+        private readonly SFX.Crypto.CSharp.Model.Signature.IPayload _payload;
         private readonly SFX.Crypto.CSharp.Model.Signature.IHash _hash;
         private readonly ISignature _signature;
         private readonly ISigningKey _signingKey;
@@ -26,9 +25,9 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
         #region Test initialization
         public SignatureServiceTests()
         {
-            _keyProvider = new RandomKeyPairProvider(new SFX.Crypto.CSharp.Infrastructure.Crypto.Asymmetric.RSA.RSACryptoSvcProvider());
+            _keyProvider = new RandomKeyPairProvider();
             _payload = Fake<IPayload>();
-            _hash = Fake<SFX.Crypto.CSharp.Model.Signature.IHash>();
+            _hash = Fake<IHash>();
             _signature = Fake<ISignature>();
             _signingKey = Fake<ISigningKey>();
             _verificationKey = Fake<IVerificationKey>();
@@ -362,7 +361,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
         public Property RoundtripForSigningDataWorks(NonEmptyString data)
         {
             var (publicKey, privateKey) = CreateKeyPair();
-            var payload = new Payload(Encoding.UTF8.GetBytes(data.Get));
+            var payload = new SFX.Crypto.CSharp.Model.Signature.Payload(Encoding.UTF8.GetBytes(data.Get));
             var sut = Create(publicKey, privateKey);
 
             var (signOk, signError, signature) =
@@ -378,9 +377,9 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
         public Property RoundtripForSigningHashWorks(NonEmptyString data)
         {
             var (publicKey, privateKey) = CreateKeyPair();
-            var payload = new UnhashedPayload(Encoding.UTF8.GetBytes(data.Get));
+            var payload = new SFX.Crypto.CSharp.Model.Hashing.Payload(Encoding.UTF8.GetBytes(data.Get));
             var hashService =
-                new HashService(new HashAlgorithmProvider());
+                new HashService().WithSHA512();
             var hash_ = hashService.ComputeHash(payload);
             var hash = new SFX.Crypto.CSharp.Model.Signature.Hash(hash_.Value.Value);
             var sut = Create(publicKey, privateKey);

@@ -3,20 +3,18 @@ using FsCheck;
 using FsCheck.Xunit;
 using SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Aes;
 using SFX.Crypto.CSharp.Model.Crypto.Symmetric.Aes;
+using SFX.Crypto.Windows.CSharp.Infrastructure.Crypto.Symmetric.Aes;
 using System;
-using System.Security.Cryptography;
 using System.Text;
 using Xunit;
 using static FakeItEasy.A;
 
 namespace Crypto.Windows.CSharp.Tests.Infrastructure.Symmetric.Aes
 {
-    public abstract class AesCryptoServiceTests<Service> where Service : ICryptoService
+    public sealed class CryptoServiceTests
     {
         #region Members
-        private readonly Func<Service> _ctor;
-        private readonly Func<(Secret Secret, Salt Salt)> _keyProvider;
-
+        private readonly RandomSecretAndSaltProvider _keyProvider;
         private readonly IUnencryptedPayload _payload;
 
         private readonly IEncryptedPayload _coded;
@@ -25,27 +23,15 @@ namespace Crypto.Windows.CSharp.Tests.Infrastructure.Symmetric.Aes
         #endregion
 
         #region Test initialization
-        protected AesCryptoServiceTests(Func<Service> ctor,
-            Func<(Secret Secret, Salt Salt)> keyProvider)
+        public CryptoServiceTests()
         {
-            _ctor = ctor;
-            _keyProvider = keyProvider;
-
+            _keyProvider = new RandomSecretAndSaltProvider()
+                .WithAesCng();
             _payload = Fake<IUnencryptedPayload>();
             _coded = Fake<IEncryptedPayload>();
             _secret = Fake<ISecret>();
             _salt = Fake<ISalt>();
         }
-        #endregion
-
-        #region Type test
-        [Fact]
-        public void CryptoServiceImplementsICryptoService() =>
-            Assert.True(typeof(ICryptoService).IsAssignableFrom(typeof(AesCryptoServiceProviderBasedCryptoService)));
-
-        [Fact]
-        public void CryptoServiceIsSealed() =>
-            Assert.True(typeof(AesCryptoServiceProviderBasedCryptoService).IsSealed);
         #endregion
 
         #region Encrypt
@@ -230,27 +216,11 @@ namespace Crypto.Windows.CSharp.Tests.Infrastructure.Symmetric.Aes
         #endregion
 
         #region Helpers
-        private Service Create() => _ctor();
+        private CryptoService Create() => new CryptoService()
+            .WithAesCng();
 
-        private (Secret Secret, Salt Salt) CreateKeyPair() =>
-            _keyProvider();
+        private (ISecret Secret, ISalt Salt) CreateKeyPair() =>
+            _keyProvider.GenerateKeyPair();
         #endregion
-    }
-    public sealed class AesCngBasedCryptoServiceTests :
-        AesCryptoServiceTests<AesCngBasedCryptoService>
-    {
-        public AesCngBasedCryptoServiceTests() : base(Ctor, CreateKeyPair) { }
-
-        private static AesCngBasedCryptoService Ctor() =>
-            new AesCngBasedCryptoService();
-
-        private static (Secret Secret, Salt Salt) CreateKeyPair()
-        {
-            using var provider = new AesCng();
-            provider.GenerateKey();
-            provider.GenerateIV();
-            return (new Secret(provider.Key),
-                new Salt(provider.IV));
-        }
     }
 }

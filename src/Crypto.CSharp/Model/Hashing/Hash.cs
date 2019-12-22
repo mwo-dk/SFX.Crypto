@@ -1,6 +1,6 @@
 ﻿using SFX.Crypto.CSharp.Model.Shared;
 
-namespace SFX.Crypto.CSharp.Model.Hash.SHA512
+namespace SFX.Crypto.CSharp.Model.Hashing
 {
     public sealed class Hash : ValidatableByteArray, IHash
     {
