@@ -25,7 +25,8 @@ namespace Crypto.Windows.CSharp.Tests.Infrastructure.Symmetric.Aes
         #region Test initialization
         public CryptoServiceTests()
         {
-            _keyProvider = new RandomSecretAndSaltProvider();
+            _keyProvider = new RandomSecretAndSaltProvider()
+                .WithAesCng();
             _payload = Fake<IUnencryptedPayload>();
             _coded = Fake<IEncryptedPayload>();
             _secret = Fake<ISecret>();
