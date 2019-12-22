@@ -6,9 +6,9 @@ module Crypto =
     module Asymmetric =
         module RSA =
             
-            open SFX.Crypto.CSharp.Infrastructure.Crypto.Assymmetric.RSA
+            open SFX.Crypto.CSharp.Infrastructure.Crypto.Asymmetric.RSA
 
-            let private service = RSACngBasedCryptoService()
+            let private service = new CryptoService()
 
             type UnencryptedPayload = {Value: byte array}
             type EncryptedPayload = {Value: byte array}
@@ -43,7 +43,7 @@ module Crypto =
         module Aes =
             open SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Aes
 
-            let private service = AesCngBasedCryptoService()
+            let private service = new CryptoService()
             
             type UnencryptedPayload = {Value: byte array}
             type EncryptedPayload = {Value: byte array}

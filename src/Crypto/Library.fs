@@ -7,7 +7,10 @@ module Crypto =
         module RSA =
             open SFX.Crypto.CSharp.Infrastructure.Crypto.Asymmetric.RSA
 
-            let private service = RSACryptoServiceProviderBasedCryptoService()
+            let private service = new CryptoService()
+            let createService() = new CryptoService()
+            let withRSACryptoServiceProvider (x: CryptoService) =
+                x.WithRSACryptoServiceProvider()
 
             type UnencryptedPayload = {Value: byte array}
             type EncryptedPayload = {Value: byte array}
@@ -42,8 +45,7 @@ module Crypto =
                 | Success x -> x |> fromUnencryptedPayload |> succeed
                 | Failure error -> error |> fail
 
-            let private rsaProvider = RSACryptoSvcProvider()
-            let private keyprovider = RandomKeyPairProvider(rsaProvider)
+            let private keyprovider = RandomKeyPairProvider()
             let generateKeyPair() =
                 match keyprovider.GenerateKeyPair() |> toResult with
                 | Success (x, y) ->
@@ -54,7 +56,12 @@ module Crypto =
         module Aes =
             open SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Aes
             
-            let private service = AesCryptoServiceProviderBasedCryptoService()
+            let private service = new CryptoService()
+            let createService() = new CryptoService()
+            let withAesCryptoServiceProvider (x: CryptoService) =
+                x.WithAesCryptoServiceProvider()
+            let withAesManaged (x: CryptoService) =
+                x.WithAesManaged()
             
             type UnencryptedPayload = {Value: byte array}
             type EncryptedPayload = {Value: byte array}
@@ -88,8 +95,7 @@ module Crypto =
                 | Success x -> x |> fromUnencryptedPayload |> succeed
                 | Failure error -> error |> fail
 
-            let private aesProvider = AesCryptoSvcProvider()
-            let private keyprovider = RandomSecretAndSaltProvider(aesProvider)
+            let private keyprovider = RandomSecretAndSaltProvider()
             let generateKeyPair() =
                 match keyprovider.GenerateKeyPair() |> toResult with
                 | Success (x, y) ->
@@ -98,16 +104,15 @@ module Crypto =
 
 module Hash =
     module SHA512 =
-        open SFX.Crypto.CSharp.Infrastructure.Hash.SHA512
+        open SFX.Crypto.CSharp.Infrastructure.Hashing
         
-        let private provider = HashAlgorithmProvider()
-        let private service = HashService(provider)
+        let private service = new HashService()
 
-        type UnhashedPayload = {Value: byte array}
+        type Payload = {Value: byte array}
         type Hash = {Value: byte array}
         let toUnhashedPayload x =
-            SFX.Crypto.CSharp.Model.Hash.SHA512.UnhashedPayload(x.Value)
-        let fromHash (x: SFX.Crypto.CSharp.Model.Hash.SHA512.IHash) : Hash =
+            SFX.Crypto.CSharp.Model.Hashing.Payload(x.Value)
+        let fromHash (x: SFX.Crypto.CSharp.Model.Hashing.IHash) : Hash =
             {Value = x.Value}
 
         let computeHash x =

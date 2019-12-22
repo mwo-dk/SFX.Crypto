@@ -1,5 +1,6 @@
 ﻿using SFX.Crypto.CSharp.Infrastructure.Crypto.Asymmetric.RSA;
 using SFX.Crypto.CSharp.Model.Signature;
+using System.Security.Cryptography;
 
 namespace SFX.Crypto.CSharp.Infrastructure.Signature
 {
@@ -13,9 +14,9 @@ namespace SFX.Crypto.CSharp.Infrastructure.Signature
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="algorithmProvider">The <see cref="IRSAProvider"/></param>
-        public RandomKeyPairProvider(IRSAProvider algorithmProvider) :
-            base(algorithmProvider, x => new SigningKey(x), x => new VerificationKey(x))
-        { }
+        public RandomKeyPairProvider() :
+            base(x => new SigningKey(x), x => new VerificationKey(x)) =>
+            RandomKeyPairProviderExtensions
+                .WithAlgorithm<RandomKeyPairProvider, SigningKey, VerificationKey>(this, new RSACryptoServiceProvider());
     }
 }

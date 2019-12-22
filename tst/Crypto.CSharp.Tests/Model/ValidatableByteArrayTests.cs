@@ -79,10 +79,10 @@ namespace Crypto.CSharp.Tests.Model
 
     namespace SHA512
     {
-        using SFX.Crypto.CSharp.Model.Hash.SHA512;
+        using SFX.Crypto.CSharp.Model.Hashing;
 
         public sealed class HashTests : GenericTest<Hash, IHash, IValidatable> { }
-        public sealed class UnhashedPayloadTests : GenericTest<UnhashedPayload, IUnhashedPayload, IValidatable> { }
+        public sealed class PayloadTests : GenericTest<Payload, IPayload, IValidatable> { }
     }
 
     namespace Signature

@@ -4,18 +4,16 @@ using FsCheck.Xunit;
 using SFX.Crypto.CSharp.Infrastructure.Crypto.Asymmetric.RSA;
 using SFX.Crypto.CSharp.Model.Crypto.Asymmetric.RSA;
 using System;
-using System.Security.Cryptography;
 using System.Text;
 using Xunit;
 using static FakeItEasy.A;
 
 namespace Crypto.CSharp.Tests.Infrastructure.Crypto.Asymmetric.RSA
 {
-    public abstract class RSACryptoServiceTests<Service> where Service : ICryptoService
+    public sealed class CryptoServiceTests
     {
         #region Members
-        private readonly Func<Service> _ctor;
-        private readonly Func<(EncryptionKey Public, DecryptionKey Private)> _keyProvider;
+        private readonly RandomKeyPairProvider _keyProvider;
 
         private readonly IUnencryptedPayload _payload;
         private readonly IEncryptionKey _encryptionKey;
@@ -24,11 +22,9 @@ namespace Crypto.CSharp.Tests.Infrastructure.Crypto.Asymmetric.RSA
         #endregion
 
         #region Test initialization
-        protected RSACryptoServiceTests(Func<Service> ctor,
-            Func<(EncryptionKey Public, DecryptionKey Private)> keyProvider)
+        public CryptoServiceTests()
         {
-            _ctor = ctor;
-            _keyProvider = keyProvider;
+            _keyProvider = new RandomKeyPairProvider();
 
             _payload = Fake<IUnencryptedPayload>();
             _encryptionKey = Fake<IEncryptionKey>();
@@ -40,7 +36,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Crypto.Asymmetric.RSA
         #region Type test
         [Fact]
         public void CryptoServiceIsSealed() =>
-            Assert.True(typeof(Service).IsSealed);
+            Assert.True(typeof(CryptoService).IsSealed);
         #endregion
 
         #region Encrypt
@@ -169,25 +165,10 @@ namespace Crypto.CSharp.Tests.Infrastructure.Crypto.Asymmetric.RSA
         #endregion
 
         #region Helpers
-        private Service Create() => _ctor();
+        private CryptoService Create() => new CryptoService().WithRSACryptoServiceProvider();
 
         private (EncryptionKey Public, DecryptionKey Private) CreateKeyPair() =>
-            _keyProvider();
+            _keyProvider.GenerateKeyPair();
         #endregion
-    }
-
-    public sealed class RSACryptoServiceProviderBasedCryptoServiceTests :
-        RSACryptoServiceTests<RSACryptoServiceProviderBasedCryptoService>
-    {
-        public RSACryptoServiceProviderBasedCryptoServiceTests() : base(Ctor, CreateKeyPair) { }
-
-        private static RSACryptoServiceProviderBasedCryptoService Ctor() =>
-            new RSACryptoServiceProviderBasedCryptoService();
-        private static (EncryptionKey Public, DecryptionKey Private) CreateKeyPair()
-        {
-            using var provider = new RSACryptoServiceProvider(2048);
-            return (new EncryptionKey(provider.ExportRSAPublicKey()),
-                new DecryptionKey(provider.ExportRSAPrivateKey()));
-        }
     }
 }

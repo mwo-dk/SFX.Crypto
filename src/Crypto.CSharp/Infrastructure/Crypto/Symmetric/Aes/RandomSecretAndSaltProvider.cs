@@ -10,40 +10,36 @@ namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Aes
     /// </summary>
     public sealed class RandomSecretAndSaltProvider : IRandomSecretAndSaltProvider
     {
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="algorithmProvider">The <see cref="IAesProvider"/></param>
-        public RandomSecretAndSaltProvider(IAesProvider algorithmProvider) =>
-            AlgorithmProvider = algorithmProvider ?? throw new ArgumentNullException(nameof(algorithmProvider));
-
-        internal IAesProvider AlgorithmProvider { get; }
-
         /// <inheritdoc/>
         public Result<(ISecret Secret, ISalt Salt)> GenerateKeyPair()
         {
-            System.Security.Cryptography.Aes algorithm = default;
+            if (Algorithm is null)
+                return Fail<(ISecret, ISalt)>(new InvalidOperationException("RandomSecretAndSaltProvider is not initialized"));
             try
             {
-                var success = false;
-                Exception error = default;
-                (success, error, algorithm) = AlgorithmProvider.GetAlgorithm();
-                if (!success)
-                    return Fail<(ISecret, ISalt)>(error);
-                algorithm.GenerateKey();
-                algorithm.GenerateIV();
-                var secret = new Secret(algorithm.Key) as ISecret;
-                var salt = new Salt(algorithm.IV) as ISalt;
+                Algorithm.GenerateKey();
+                Algorithm.GenerateIV();
+                var secret = new Secret(Algorithm.Key) as ISecret;
+                var salt = new Salt(Algorithm.IV) as ISalt;
                 return Succeed((secret, salt));
             }
             catch (Exception error)
             {
                 return Fail<(ISecret, ISalt)>(error);
             }
-            finally
-            {
-                algorithm?.Dispose();
-            }
         }
+
+        internal System.Security.Cryptography.Aes Algorithm;
+
+        internal RandomSecretAndSaltProvider WithAlgorithm(System.Security.Cryptography.Aes algorithm)
+        {
+            Algorithm = algorithm;
+            return this;
+        }
+        public RandomSecretAndSaltProvider WithAesCryptoServiceProvider() =>
+            WithAlgorithm(new System.Security.Cryptography.AesCryptoServiceProvider());
+
+        public RandomSecretAndSaltProvider WithAesManaged() =>
+            WithAlgorithm(new System.Security.Cryptography.AesManaged());
     }
 }

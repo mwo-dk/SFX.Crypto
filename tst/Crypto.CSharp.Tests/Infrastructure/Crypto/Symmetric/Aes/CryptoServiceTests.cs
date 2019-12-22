@@ -4,18 +4,16 @@ using FsCheck.Xunit;
 using SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Aes;
 using SFX.Crypto.CSharp.Model.Crypto.Symmetric.Aes;
 using System;
-using System.Security.Cryptography;
 using System.Text;
 using Xunit;
 using static FakeItEasy.A;
 
 namespace Crypto.CSharp.Tests.Infrastructure.Crypto.Symmetric.Aes
 {
-    public abstract class AesCryptoServiceTests<Service> where Service : ICryptoService
+    public sealed class CryptoServiceTests
     {
         #region Members
-        private readonly Func<Service> _ctor;
-        private readonly Func<(Secret Secret, Salt Salt)> _keyProvider;
+        private readonly RandomSecretAndSaltProvider _keyProvider;
 
         private readonly IUnencryptedPayload _payload;
 
@@ -25,11 +23,10 @@ namespace Crypto.CSharp.Tests.Infrastructure.Crypto.Symmetric.Aes
         #endregion
 
         #region Test initialization
-        protected AesCryptoServiceTests(Func<Service> ctor,
-            Func<(Secret Secret, Salt Salt)> keyProvider)
+        public CryptoServiceTests()
         {
-            _ctor = ctor;
-            _keyProvider = keyProvider;
+            _keyProvider = new RandomSecretAndSaltProvider()
+                .WithAesCryptoServiceProvider();
 
             _payload = Fake<IUnencryptedPayload>();
             _coded = Fake<IEncryptedPayload>();
@@ -41,11 +38,11 @@ namespace Crypto.CSharp.Tests.Infrastructure.Crypto.Symmetric.Aes
         #region Type test
         [Fact]
         public void CryptoServiceImplementsICryptoService() =>
-            Assert.True(typeof(ICryptoService).IsAssignableFrom(typeof(AesCryptoServiceProviderBasedCryptoService)));
+            Assert.True(typeof(ICryptoService).IsAssignableFrom(typeof(CryptoService)));
 
         [Fact]
         public void CryptoServiceIsSealed() =>
-            Assert.True(typeof(AesCryptoServiceProviderBasedCryptoService).IsSealed);
+            Assert.True(typeof(CryptoService).IsSealed);
         #endregion
 
         #region Encrypt
@@ -214,7 +211,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Crypto.Symmetric.Aes
 
         #region Roundtrip works
         [Property]
-        public Property RoundtripWorks(NonEmptyString data)
+        public Property RoundtripAesCryptoServiceProviderWorks(NonEmptyString data)
         {
             var (secret, salt) = CreateKeyPair();
             var payload = new UnencryptedPayload(Encoding.UTF8.GetBytes(data.Get));
@@ -227,48 +224,30 @@ namespace Crypto.CSharp.Tests.Infrastructure.Crypto.Symmetric.Aes
 
             return (0 == string.Compare(data.Get, result, StringComparison.InvariantCulture)).ToProperty();
         }
+
+        [Property]
+        public Property RoundAesManagedtripWorks(NonEmptyString data)
+        {
+            _keyProvider.WithAesManaged();
+            var (secret, salt) = CreateKeyPair();
+            var payload = new UnencryptedPayload(Encoding.UTF8.GetBytes(data.Get));
+            var sut = Create().WithAesManaged();
+
+            var (_, _, coded) = sut.Encrypt(payload, secret, salt);
+            var (_, _, unencoded) = sut.Decrypt(coded, secret, salt);
+
+            var result = Encoding.UTF8.GetString(unencoded.Value);
+
+            return (0 == string.Compare(data.Get, result, StringComparison.InvariantCulture)).ToProperty();
+        }
         #endregion
 
         #region Helpers
-        private Service Create() => _ctor();
+        private CryptoService Create() => new CryptoService()
+            .WithAesCryptoServiceProvider();
 
-        private (Secret Secret, Salt Salt) CreateKeyPair() =>
-            _keyProvider();
+        private (ISecret Secret, ISalt Salt) CreateKeyPair() =>
+            _keyProvider.GenerateKeyPair();
         #endregion
-    }
-
-    public sealed class AesCryptoServiceProviderBasedCryptoServiceTests :
-        AesCryptoServiceTests<AesCryptoServiceProviderBasedCryptoService>
-    {
-        public AesCryptoServiceProviderBasedCryptoServiceTests() : base(Ctor, CreateKeyPair) { }
-
-        private static AesCryptoServiceProviderBasedCryptoService Ctor() =>
-            new AesCryptoServiceProviderBasedCryptoService();
-        private static (Secret Secret, Salt Salt) CreateKeyPair()
-        {
-            using var provider = new AesCryptoServiceProvider();
-            provider.GenerateKey();
-            provider.GenerateIV();
-            return (new Secret(provider.Key),
-                new Salt(provider.IV));
-        }
-    }
-
-    public sealed class AesManagedBasedCryptoServiceTests :
-        AesCryptoServiceTests<AesManagedBasedCryptoService>
-    {
-        public AesManagedBasedCryptoServiceTests() : base(Ctor, CreateKeyPair) { }
-
-        private static AesManagedBasedCryptoService Ctor() =>
-            new AesManagedBasedCryptoService();
-
-        private static (Secret Secret, Salt Salt) CreateKeyPair()
-        {
-            using var provider = new AesManaged();
-            provider.GenerateKey();
-            provider.GenerateIV();
-            return (new Secret(provider.Key),
-                new Salt(provider.IV));
-        }
     }
 }

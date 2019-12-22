@@ -1,22 +1,19 @@
 ﻿using FakeItEasy;
 using FsCheck;
 using FsCheck.Xunit;
-using SFX.Crypto.CSharp.Infrastructure.Crypto.Assymmetric.RSA;
 using SFX.Crypto.CSharp.Infrastructure.Crypto.Asymmetric.RSA;
 using SFX.Crypto.CSharp.Model.Crypto.Asymmetric.RSA;
 using System;
-using System.Security.Cryptography;
 using System.Text;
 using Xunit;
 using static FakeItEasy.A;
 
-namespace Crypto.Windows.CSharp.Tests.Infrastructure.Assymmetric.RSA
+namespace Crypto.Windows.CSharp.Tests.Infrastructure.Asymmetric.RSA
 {
-    public abstract class RSACryptoServiceTests<Service> where Service : ICryptoService
+    public class CryptoServiceTests
     {
         #region Members
-        private readonly Func<Service> _ctor;
-        private readonly Func<(EncryptionKey Public, DecryptionKey Private)> _keyProvider;
+        private readonly RandomKeyPairProvider _keyProvider;
 
         private readonly IUnencryptedPayload _payload;
         private readonly IEncryptionKey _encryptionKey;
@@ -25,11 +22,9 @@ namespace Crypto.Windows.CSharp.Tests.Infrastructure.Assymmetric.RSA
         #endregion
 
         #region Test initialization
-        protected RSACryptoServiceTests(Func<Service> ctor,
-            Func<(EncryptionKey Public, DecryptionKey Private)> keyProvider)
+        public CryptoServiceTests()
         {
-            _ctor = ctor;
-            _keyProvider = keyProvider;
+            _keyProvider = new RandomKeyPairProvider().WithRSACng();
 
             _payload = Fake<IUnencryptedPayload>();
             _encryptionKey = Fake<IEncryptionKey>();
@@ -41,11 +36,11 @@ namespace Crypto.Windows.CSharp.Tests.Infrastructure.Assymmetric.RSA
         #region Type test
         [Fact]
         public void CryptoServiceImplementsICryptoService() =>
-            Assert.True(typeof(ICryptoService).IsAssignableFrom(typeof(RSACryptoServiceProviderBasedCryptoService)));
+            Assert.True(typeof(ICryptoService).IsAssignableFrom(typeof(CryptoService)));
 
         [Fact]
         public void CryptoServiceIsSealed() =>
-            Assert.True(typeof(RSACryptoServiceProviderBasedCryptoService).IsSealed);
+            Assert.True(typeof(CryptoService).IsSealed);
         #endregion
 
         #region Encrypt
@@ -174,26 +169,11 @@ namespace Crypto.Windows.CSharp.Tests.Infrastructure.Assymmetric.RSA
         #endregion
 
         #region Helpers
-        private Service Create() => _ctor();
+        private CryptoService Create() =>
+            new CryptoService().WithRSACng();
 
         private (EncryptionKey Public, DecryptionKey Private) CreateKeyPair() =>
-            _keyProvider();
+            _keyProvider.GenerateKeyPair();
         #endregion
-    }
-
-    public sealed class RSACngBasedCryptoServiceTests :
-        RSACryptoServiceTests<RSACngBasedCryptoService>
-    {
-        public RSACngBasedCryptoServiceTests() : base(Ctor, CreateKeyPair) { }
-
-        private static RSACngBasedCryptoService Ctor() =>
-            new RSACngBasedCryptoService();
-
-        private static (EncryptionKey Public, DecryptionKey Private) CreateKeyPair()
-        {
-            using var provider = new RSACng(2048);
-            return (new EncryptionKey(provider.ExportRSAPublicKey()),
-                new DecryptionKey(provider.ExportRSAPrivateKey()));
-        }
     }
 }
