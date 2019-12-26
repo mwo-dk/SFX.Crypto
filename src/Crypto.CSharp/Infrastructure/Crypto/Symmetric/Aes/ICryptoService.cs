@@ -13,18 +13,14 @@ namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Aes
         /// Encrypts the provided <paramref name="payload"/> based on the provided <paramref name="secret"/> and <paramref name="salt"/>
         /// </summary>
         /// <param name="payload">The <see cref="IUnencryptedPayload"/> to encrypt</param>
-        /// <param name="secret">The <see cref="ISecret"/> utilized</param>
-        /// <param name="salt">The <see cref="ISalt"/> utilized</param>
         /// <returns><paramref name="payload"/> encrypted</returns>
-        Result<IEncryptedPayload> Encrypt(IUnencryptedPayload payload, ISecret secret, ISalt salt);
+        Result<IEncryptedPayload> Encrypt(IUnencryptedPayload payload);
 
         /// <summary>
         /// Decrypts the provided <paramref name="payload"/> based on the provided <paramref name="secret"/> and <paramref name="salt"/>
         /// </summary>
         /// <param name="payload">The <see cref="IEncryptedPayload"/> to decrypt</param>
-        /// <param name="secret">The <see cref="ISecret"/> utilized</param>
-        /// <param name="salt">The <see cref="ISalt"/> to utilize</param>
         /// <returns><paramref name="payload"/> decrypted</returns>
-        Result<IUnencryptedPayload> Decrypt(IEncryptedPayload payload, ISecret secret, ISalt salt);
+        Result<IUnencryptedPayload> Decrypt(IEncryptedPayload payload);
     }
 }

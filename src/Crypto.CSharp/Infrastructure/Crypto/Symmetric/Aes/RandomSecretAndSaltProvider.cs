@@ -10,6 +10,9 @@ namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Aes
     /// </summary>
     public sealed class RandomSecretAndSaltProvider : IRandomSecretAndSaltProvider
     {
+        public RandomSecretAndSaltProvider() =>
+            Algorithm = new System.Security.Cryptography.AesCryptoServiceProvider();
+            
         /// <inheritdoc/>
         public Result<(ISecret Secret, ISalt Salt)> GenerateKeyPair()
         {
@@ -33,10 +36,13 @@ namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Aes
 
         internal RandomSecretAndSaltProvider WithAlgorithm(System.Security.Cryptography.Aes algorithm)
         {
+            if (!(Algorithm is null))
+                Algorithm.Dispose();
+
             Algorithm = algorithm;
             return this;
         }
-        public RandomSecretAndSaltProvider WithAesCryptoServiceProvider() =>
+        public RandomSecretAndSaltProvider Wc() =>
             WithAlgorithm(new System.Security.Cryptography.AesCryptoServiceProvider());
 
         public RandomSecretAndSaltProvider WithAesManaged() =>

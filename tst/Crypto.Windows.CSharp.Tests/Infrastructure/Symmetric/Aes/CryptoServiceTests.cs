@@ -3,7 +3,6 @@ using FsCheck;
 using FsCheck.Xunit;
 using SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Aes;
 using SFX.Crypto.CSharp.Model.Crypto.Symmetric.Aes;
-using SFX.Crypto.Windows.CSharp.Infrastructure.Crypto.Symmetric.Aes;
 using System;
 using System.Text;
 using Xunit;
@@ -40,7 +39,7 @@ namespace Crypto.Windows.CSharp.Tests.Infrastructure.Symmetric.Aes
         {
             var sut = Create();
 
-            var (success, error, result) = sut.Encrypt(default, _secret, _salt);
+            var (success, error, result) = sut.Encrypt(default);
 
             Assert.False(success);
             Assert.NotNull(error);
@@ -54,61 +53,7 @@ namespace Crypto.Windows.CSharp.Tests.Infrastructure.Symmetric.Aes
                 .Returns(false);
             var sut = Create();
 
-            var (success, error, result) = sut.Encrypt(_payload, _secret, _salt);
-
-            Assert.False(success);
-            Assert.NotNull(error);
-            Assert.Null(result);
-        }
-
-        [Fact]
-        public void EncryptWithNullSecretFails()
-        {
-            var sut = Create();
-
-            var (success, error, result) = sut.Encrypt(_payload, default, _salt);
-
-            Assert.False(success);
-            Assert.NotNull(error);
-            Assert.Null(result);
-        }
-
-        [Fact]
-        public void EncryptWithInvalidSecretFails()
-        {
-            CallTo(() => _secret.IsValid())
-                .Returns(false);
-            var sut = Create();
-
-            var (success, error, result) = sut.Encrypt(_payload, _secret, _salt);
-
-            Assert.False(success);
-            Assert.NotNull(error);
-            Assert.Null(result);
-        }
-
-        [Fact]
-        public void EncryptWithNullSaltFails()
-        {
-            var sut = Create();
-
-            var (success, error, result) = sut.Encrypt(_payload, _secret, default);
-
-            Assert.False(success);
-            Assert.NotNull(error);
-            Assert.Null(result);
-        }
-
-        [Fact]
-        public void EncryptWithInvalidSaltFails()
-        {
-            CallTo(() => _secret.IsValid())
-                .Returns(true);
-            CallTo(() => _salt.IsValid())
-                .Returns(false);
-            var sut = Create();
-
-            var (success, error, result) = sut.Encrypt(_payload, _secret, _salt);
+            var (success, error, result) = sut.Encrypt(_payload);
 
             Assert.False(success);
             Assert.NotNull(error);
@@ -122,7 +67,7 @@ namespace Crypto.Windows.CSharp.Tests.Infrastructure.Symmetric.Aes
         {
             var sut = Create();
 
-            var (success, error, result) = sut.Decrypt(default, _secret, _salt);
+            var (success, error, result) = sut.Decrypt(default);
 
             Assert.False(success);
             Assert.NotNull(error);
@@ -136,61 +81,7 @@ namespace Crypto.Windows.CSharp.Tests.Infrastructure.Symmetric.Aes
                 .Returns(false);
             var sut = Create();
 
-            var (success, error, result) = sut.Decrypt(_coded, _secret, _salt);
-
-            Assert.False(success);
-            Assert.NotNull(error);
-            Assert.Null(result);
-        }
-
-        [Fact]
-        public void DecryptWithNullSecretFails()
-        {
-            var sut = Create();
-
-            var (success, error, result) = sut.Decrypt(_coded, default, _salt);
-
-            Assert.False(success);
-            Assert.NotNull(error);
-            Assert.Null(result);
-        }
-
-        [Fact]
-        public void DecryptWithInvaliSecretFails()
-        {
-            CallTo(() => _secret.IsValid())
-                .Returns(false);
-            var sut = Create();
-
-            var (success, error, result) = sut.Decrypt(_coded, _secret, _salt);
-
-            Assert.False(success);
-            Assert.NotNull(error);
-            Assert.Null(result);
-        }
-
-        [Fact]
-        public void DecryptWithNullSaltFails()
-        {
-            var sut = Create();
-
-            var (success, error, result) = sut.Decrypt(_coded, _secret, default);
-
-            Assert.False(success);
-            Assert.NotNull(error);
-            Assert.Null(result);
-        }
-
-        [Fact]
-        public void DecryptWithInvaliSaltFails()
-        {
-            CallTo(() => _secret.IsValid())
-                .Returns(true);
-            CallTo(() => _salt.IsValid())
-                .Returns(false);
-            var sut = Create();
-
-            var (success, error, result) = sut.Decrypt(_coded, _secret, _salt);
+            var (success, error, result) = sut.Decrypt(_coded);
 
             Assert.False(success);
             Assert.NotNull(error);
@@ -206,8 +97,8 @@ namespace Crypto.Windows.CSharp.Tests.Infrastructure.Symmetric.Aes
             var payload = new UnencryptedPayload(Encoding.UTF8.GetBytes(data.Get));
             var sut = Create();
 
-            var (_, _, coded) = sut.Encrypt(payload, secret, salt);
-            var (_, _, unencoded) = sut.Decrypt(coded, secret, salt);
+            var (_, _, coded) = sut.Encrypt(payload);
+            var (_, _, unencoded) = sut.Decrypt(coded);
 
             var result = Encoding.UTF8.GetString(unencoded.Value);
 

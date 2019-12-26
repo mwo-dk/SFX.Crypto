@@ -13,23 +13,17 @@ namespace Crypto.CSharp.Tests.Infrastructure.Crypto.Asymmetric.RSA
     public sealed class CryptoServiceTests
     {
         #region Members
-        private readonly RandomKeyPairProvider _keyProvider;
-
+        private readonly RandomKeyPairProvider _keyPairProvider;
         private readonly IUnencryptedPayload _payload;
-        private readonly IEncryptionKey _encryptionKey;
         private readonly IEncryptedPayload _coded;
-        private readonly IDecryptionKey _decryptionKey;
         #endregion
 
         #region Test initialization
         public CryptoServiceTests()
         {
-            _keyProvider = new RandomKeyPairProvider();
-
+            _keyPairProvider = new RandomKeyPairProvider();
             _payload = Fake<IUnencryptedPayload>();
-            _encryptionKey = Fake<IEncryptionKey>();
             _coded = Fake<IEncryptedPayload>();
-            _decryptionKey = Fake<IDecryptionKey>();
         }
         #endregion
 
@@ -45,7 +39,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Crypto.Asymmetric.RSA
         {
             var sut = Create();
 
-            var (success, error, result) = sut.Encrypt(default, _encryptionKey);
+            var (success, error, result) = sut.Encrypt(default);
 
             Assert.False(success);
             Assert.NotNull(error);
@@ -59,33 +53,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Crypto.Asymmetric.RSA
                 .Returns(false);
             var sut = Create();
 
-            var (success, error, result) = sut.Encrypt(_payload, _encryptionKey);
-
-            Assert.False(success);
-            Assert.NotNull(error);
-            Assert.Null(result);
-        }
-
-        [Fact]
-        public void EncryptWithNullKeyFails()
-        {
-            var sut = Create();
-
-            var (success, error, result) = sut.Encrypt(_payload, default);
-
-            Assert.False(success);
-            Assert.NotNull(error);
-            Assert.Null(result);
-        }
-
-        [Fact]
-        public void EncryptWithInvalidKayFails()
-        {
-            CallTo(() => _encryptionKey.IsValid())
-                .Returns(false);
-            var sut = Create();
-
-            var (success, error, result) = sut.Encrypt(_payload, _encryptionKey);
+            var (success, error, result) = sut.Encrypt(_payload);
 
             Assert.False(success);
             Assert.NotNull(error);
@@ -99,7 +67,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Crypto.Asymmetric.RSA
         {
             var sut = Create();
 
-            var (success, error, result) = sut.Decrypt(default, _decryptionKey);
+            var (success, error, result) = sut.Decrypt(default);
 
             Assert.False(success);
             Assert.NotNull(error);
@@ -113,33 +81,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Crypto.Asymmetric.RSA
                 .Returns(false);
             var sut = Create();
 
-            var (success, error, result) = sut.Decrypt(_coded, _decryptionKey);
-
-            Assert.False(success);
-            Assert.NotNull(error);
-            Assert.Null(result);
-        }
-
-        [Fact]
-        public void DecryptWithNullKeyFails()
-        {
-            var sut = Create();
-
-            var (success, error, result) = sut.Decrypt(_coded, default);
-
-            Assert.False(success);
-            Assert.NotNull(error);
-            Assert.Null(result);
-        }
-
-        [Fact]
-        public void DecryptWithInvalidKeyFails()
-        {
-            CallTo(() => _decryptionKey.IsValid())
-                .Returns(false);
-            var sut = Create();
-
-            var (success, error, result) = sut.Decrypt(_coded, _decryptionKey);
+            var (success, error, result) = sut.Decrypt(_coded);
 
             Assert.False(success);
             Assert.NotNull(error);
@@ -151,12 +93,18 @@ namespace Crypto.CSharp.Tests.Infrastructure.Crypto.Asymmetric.RSA
         [Property]
         public Property RoundtripWorks(NonEmptyString data)
         {
-            var (publicKey, privateKey) = CreateKeyPair();
+            var (ok, _, keys) =
+                _keyPairProvider.GenerateKeyPair();
+            if (!ok)
+                return false.ToProperty();
+            var (encryptionKey, decryptionKey) = keys;
             var payload = new UnencryptedPayload(Encoding.UTF8.GetBytes(data.Get));
-            var sut = Create();
+            var sut = Create()
+                .WithEncryptionKey(encryptionKey)
+                .WithDeryptionKey(decryptionKey);
 
-            var (_, _, coded) = sut.Encrypt(payload, publicKey);
-            var (_, _, unencoded) = sut.Decrypt(coded, privateKey);
+            var (_, _, coded) = sut.Encrypt(payload);
+            var (_, _, unencoded) = sut.Decrypt(coded);
 
             var result = Encoding.UTF8.GetString(unencoded.Value);
 
@@ -165,10 +113,8 @@ namespace Crypto.CSharp.Tests.Infrastructure.Crypto.Asymmetric.RSA
         #endregion
 
         #region Helpers
-        private CryptoService Create() => new CryptoService().WithRSACryptoServiceProvider();
-
-        private (EncryptionKey Public, DecryptionKey Private) CreateKeyPair() =>
-            _keyProvider.GenerateKeyPair();
+        private CryptoService Create() => 
+            new CryptoService().WithRSACryptoServiceProvider();
         #endregion
     }
 }
