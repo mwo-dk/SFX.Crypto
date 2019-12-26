@@ -1,5 +1,6 @@
 ﻿using SFX.ROP.CSharp;
 using System;
+using System.Security.Cryptography;
 using static SFX.ROP.CSharp.Library;
 
 namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Asymmetric.RSA
@@ -50,7 +51,20 @@ namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Asymmetric.RSA
             System.Security.Cryptography.RSA algorithm)
             where Service : RandomKeyPairProviderBase<PublicKey, PrivateKey>
         {
+            if (!(service.Algorithm is null) && !ReferenceEquals(service.Algorithm, algorithm))
+                service.Algorithm.Dispose();
+
             service.Algorithm = algorithm;
+            return service;
+        }
+
+        public static Service WithRSACryptoServiceProvider<Service, PublicKey, PrivateKey>(this Service service)
+            where Service : RandomKeyPairProviderBase<PublicKey, PrivateKey>
+        {
+            if (!(service.Algorithm is null))
+                service.Algorithm.Dispose();
+
+            service.Algorithm = new RSACryptoServiceProvider();
             return service;
         }
     }

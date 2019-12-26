@@ -75,7 +75,8 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
         [Fact]
         public void SignPayloadWithNullPayloadFails()
         {
-            var sut = Create();
+            var (publicKey, privateKey) = CreateKeyPair();
+            var sut = Create(publicKey, privateKey);
 
             var (success, error, result) = sut.SignPayload(default);
 
@@ -87,23 +88,10 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
         [Fact]
         public void SignPayloadWithInvalidPayloadFails()
         {
+            var (publicKey, privateKey) = CreateKeyPair();
+            var sut = Create(publicKey, privateKey);
             CallTo(() => _payload.IsValid())
                 .Returns(false);
-            var sut = Create();
-
-            var (success, error, result) = sut.SignPayload(_payload);
-
-            Assert.False(success);
-            Assert.NotNull(error);
-            Assert.Null(result);
-        }
-
-        [Fact]
-        public void SignPayloadWithInvalidKeyFails()
-        {
-            CallTo(() => _signingKey.IsValid())
-                .Returns(false);
-            var sut = Create();
 
             var (success, error, result) = sut.SignPayload(_payload);
 
@@ -148,7 +136,8 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
         [Fact]
         public void SignHashWithNullPayloadFails()
         {
-            var sut = Create();
+            var (publicKey, privateKey) = CreateKeyPair();
+            var sut = Create(publicKey, privateKey);
 
             var (success, error, result) = sut.SignHash(default);
 
@@ -160,23 +149,10 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
         [Fact]
         public void SignHashWithInvalidPayloadFails()
         {
+            var (publicKey, privateKey) = CreateKeyPair();
             CallTo(() => _hash.IsValid())
                 .Returns(false);
-            var sut = Create();
-
-            var (success, error, result) = sut.SignHash(_hash);
-
-            Assert.False(success);
-            Assert.NotNull(error);
-            Assert.Null(result);
-        }
-
-        [Fact]
-        public void SignHashWithInvalidKeyFails()
-        {
-            CallTo(() => _signingKey.IsValid())
-                .Returns(false);
-            var sut = Create();
+            var sut = Create(publicKey, privateKey);
 
             var (success, error, result) = sut.SignHash(_hash);
 
@@ -221,7 +197,8 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
         [Fact]
         public void VerifyPayloadWithNullPayloadFails()
         {
-            var sut = Create();
+            var (publicKey, privateKey) = CreateKeyPair();
+            var sut = Create(publicKey, privateKey);
 
             var (success, error, result) = sut.VerifyPayload(default, _signature);
 
@@ -233,9 +210,10 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
         [Fact]
         public void VerifyPayloadWithInvalidPayloadFails()
         {
+            var (publicKey, privateKey) = CreateKeyPair();
+            var sut = Create(publicKey, privateKey);
             CallTo(() => _payload.IsValid())
                 .Returns(false);
-            var sut = Create();
 
             var (success, error, result) = sut.VerifyPayload(_payload, _signature);
 
@@ -247,7 +225,8 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
         [Fact]
         public void VerifyPayloadWithNullSignatureFails()
         {
-            var sut = Create();
+            var (publicKey, privateKey) = CreateKeyPair();
+            var sut = Create(publicKey, privateKey);
 
             var (success, error, result) = sut.VerifyPayload(_payload, default);
 
@@ -259,9 +238,10 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
         [Fact]
         public void VerifyPayloadWithInvalidSignatureFails()
         {
+            var (publicKey, privateKey) = CreateKeyPair();
+            var sut = Create(publicKey, privateKey);
             CallTo(() => _signature.IsValid())
                 .Returns(false);
-            var sut = Create();
 
             var (success, error, result) = sut.VerifyPayload(_payload, _signature);
 
@@ -306,7 +286,8 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
         [Fact]
         public void VerifyHashWithNullPayloadFails()
         {
-            var sut = Create();
+            var (publicKey, privateKey) = CreateKeyPair();
+            var sut = Create(publicKey, privateKey);
 
             var (success, error, result) = sut.VerifyHash(default, _signature);
 
@@ -318,9 +299,10 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
         [Fact]
         public void VerifyHashWithInvalidPayloadFails()
         {
+            var (publicKey, privateKey) = CreateKeyPair();
+            var sut = Create(publicKey, privateKey);
             CallTo(() => _hash.IsValid())
                 .Returns(false);
-            var sut = Create();
 
             var (success, error, result) = sut.VerifyHash(_hash, _signature);
 
@@ -332,7 +314,8 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
         [Fact]
         public void VerifyHashWithNullSignatureFails()
         {
-            var sut = Create();
+            var (publicKey, privateKey) = CreateKeyPair();
+            var sut = Create(publicKey, privateKey);
 
             var (success, error, result) = sut.VerifyHash(_hash, default);
 
@@ -344,9 +327,10 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
         [Fact]
         public void VerifyHashWithInvalidSignatureFails()
         {
+            var (publicKey, privateKey) = CreateKeyPair();
+            var sut = Create(publicKey, privateKey);
             CallTo(() => _signature.IsValid())
                 .Returns(false);
-            var sut = Create();
 
             var (success, error, result) = sut.VerifyHash(_hash, _signature);
 
@@ -361,7 +345,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
         public Property RoundtripForSigningDataWorks(NonEmptyString data)
         {
             var (publicKey, privateKey) = CreateKeyPair();
-            var payload = new SFX.Crypto.CSharp.Model.Signature.Payload(Encoding.UTF8.GetBytes(data.Get));
+            var payload = new Payload(Encoding.UTF8.GetBytes(data.Get));
             var sut = Create(publicKey, privateKey);
 
             var (signOk, signError, signature) =
@@ -379,7 +363,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
             var (publicKey, privateKey) = CreateKeyPair();
             var payload = new SFX.Crypto.CSharp.Model.Hashing.Payload(Encoding.UTF8.GetBytes(data.Get));
             var hashService =
-                new HashService().WithSHA512();
+                new HashService().WithSHA512CryptoServiceProvider();
             var hash_ = hashService.ComputeHash(payload);
             var hash = new SFX.Crypto.CSharp.Model.Signature.Hash(hash_.Value.Value);
             var sut = Create(publicKey, privateKey);

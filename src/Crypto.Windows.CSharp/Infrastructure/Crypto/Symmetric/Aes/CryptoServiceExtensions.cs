@@ -1,7 +1,6 @@
-﻿using SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Aes;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 
-namespace SFX.Crypto.Windows.CSharp.Infrastructure.Crypto.Symmetric.Aes
+namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Aes
 {
     public static class CryptoServiceExtensions
     {

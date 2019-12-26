@@ -8,19 +8,6 @@ using static System.Threading.Interlocked;
 namespace SFX.Crypto.CSharp.Infrastructure.Hashing
 {
     /// <summary>
-    /// Interface describing the capability of hashing
-    /// </summary>
-    public interface IHashService
-    {
-        /// <summary>
-        /// Computes the hash <paramref name="payload"/>
-        /// </summary>
-        /// <param name="payload">The payload to hash</param>
-        /// <returns><paramref name="payload"/> hashed</returns>
-        Result<IHash> ComputeHash(IPayload payload);
-    }
-
-    /// <summary>
     /// Implements <see cref="IHashService"/>
     /// </summary>
     public sealed class HashService : IHashService, IDisposable
@@ -51,22 +38,34 @@ namespace SFX.Crypto.CSharp.Infrastructure.Hashing
 
         private HashAlgorithm Algorithm;
 
-        private HashService WithAlgorithm(HashAlgorithm algorithm)
+        internal HashService WithAlgorithm(HashAlgorithm algorithm)
         {
             if (IsDisposed())
                 throw new ObjectDisposedException(typeof(HashService).Name);
-
             if (!(Algorithm is null) && !ReferenceEquals(Algorithm, algorithm))
                 Algorithm.Dispose();
 
             Algorithm = algorithm;
             return this;
         }
-        public HashService WithSHA1() => WithAlgorithm(SHA1.Create());
-        public HashService WithSHA256() => WithAlgorithm(SHA256.Create());
-        public HashService WithSHA384() => WithAlgorithm(SHA384.Create());
-        public HashService WithSHA512() => WithAlgorithm(SHA512.Create());
-        public HashService WithMD5() => WithAlgorithm(MD5.Create());
+        public HashService WithSHA1CryptoServiceProvider() =>
+            WithAlgorithm(new SHA1CryptoServiceProvider());
+        public HashService WithSHA1Managed() =>
+            WithAlgorithm(new SHA1Managed());
+        public HashService WithSHA256CryptoServiceProvider() =>
+            WithAlgorithm(new SHA256CryptoServiceProvider());
+        public HashService WithSHA256Managed() =>
+            WithAlgorithm(new SHA256Managed());
+        public HashService WithSHA384CryptoServiceProvider() =>
+            WithAlgorithm(new SHA384CryptoServiceProvider());
+        public HashService WithSHA384Managed() =>
+            WithAlgorithm(new SHA384Managed());
+        public HashService WithSHA512CryptoServiceProvider() =>
+            WithAlgorithm(new SHA512CryptoServiceProvider());
+        public HashService WithSHA512Managed() =>
+            WithAlgorithm(new SHA512Managed());
+        public HashService WithMD5CryptoServiceProvider() =>
+            WithAlgorithm(new MD5CryptoServiceProvider());
 
         internal long DisposeCount;
         private bool IsDisposed() => 0L < Read(ref DisposeCount);

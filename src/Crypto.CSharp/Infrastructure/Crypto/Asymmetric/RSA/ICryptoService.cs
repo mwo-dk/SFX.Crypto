@@ -13,16 +13,14 @@ namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Asymmetric.RSA
         /// Encrypts the provided <paramref name="payload"/> based on the provided <paramref name="key"/>
         /// </summary>
         /// <param name="payload">The <see cref="IUnencryptedPayload"/> to encrypt</param>
-        /// <param name="key">The <see cref="IEncryptionKey"/> utilized</param>
         /// <returns><paramref name="payload"/> encrypted</returns>
-        Result<IEncryptedPayload> Encrypt(IUnencryptedPayload payload, IEncryptionKey key);
+        Result<IEncryptedPayload> Encrypt(IUnencryptedPayload payload);
 
         /// <summary>
         /// Decrypts the provided <paramref name="payload"/> based on the provided <paramref name="key"/>
         /// </summary>
         /// <param name="payload">The <see cref="IEncryptedPayload"/> to decrypt</param>
-        /// <param name="key">The <see cref="IDecryptionSecret"/> to utilize</param>
         /// <returns><paramref name="payload"/> decrypted</returns>
-        Result<IUnencryptedPayload> Decrypt(IEncryptedPayload payload, IDecryptionKey key);
+        Result<IUnencryptedPayload> Decrypt(IEncryptedPayload payload);
     }
 }

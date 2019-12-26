@@ -13,24 +13,19 @@ namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Asymmetric.RSA
     public sealed class CryptoService : ICryptoService, IDisposable
     {
         /// <inheritdoc/>
-        public Result<IEncryptedPayload> Encrypt(IUnencryptedPayload payload, IEncryptionKey key)
+        public Result<IEncryptedPayload> Encrypt(IUnencryptedPayload payload)
         {
             if (IsDisposed())
                 return Fail<IEncryptedPayload>(new ObjectDisposedException(typeof(CryptoService).Name));
-            if (Algorithm is null)
+            if (Algorithm is null || !IsEncryptionKeySet)
                 return Fail<IEncryptedPayload>(new InvalidOperationException("CryptoService is not initialized"));
             if (payload is null)
                 return Fail<IEncryptedPayload>(new ArgumentNullException(nameof(payload)));
             if (!payload.IsValid())
                 return Fail<IEncryptedPayload>(new ArgumentException(nameof(payload)));
-            if (key is null)
-                return Fail<IEncryptedPayload>(new ArgumentNullException(nameof(key)));
-            if (!key.IsValid())
-                return Fail<IEncryptedPayload>(new ArgumentException(nameof(key)));
 
             try
             {
-                Algorithm.ImportRSAPublicKey(key.Value, out var _);
                 var result = Algorithm.Encrypt(payload.Value, RSAEncryptionPadding.Pkcs1);
                 return Succeed(new EncryptedPayload(result) as IEncryptedPayload);
             }
@@ -41,24 +36,19 @@ namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Asymmetric.RSA
         }
 
         /// <inheritdoc/>
-        public Result<IUnencryptedPayload> Decrypt(IEncryptedPayload payload, IDecryptionKey key)
+        public Result<IUnencryptedPayload> Decrypt(IEncryptedPayload payload)
         {
             if (IsDisposed())
                 return Fail<IUnencryptedPayload>(new ObjectDisposedException(typeof(CryptoService).Name));
-            if (Algorithm is null)
+            if (Algorithm is null || !IsDecryptionKeySet)
                 return Fail<IUnencryptedPayload>(new InvalidOperationException("CryptoService is not initialized"));
             if (payload is null)
                 return Fail<IUnencryptedPayload>(new ArgumentNullException(nameof(payload)));
             if (!payload.IsValid())
                 return Fail<IUnencryptedPayload>(new ArgumentException(nameof(payload)));
-            if (key is null)
-                return Fail<IUnencryptedPayload>(new ArgumentNullException(nameof(key)));
-            if (!key.IsValid())
-                return Fail<IUnencryptedPayload>(new ArgumentException(nameof(key)));
 
             try
             {
-                Algorithm.ImportRSAPrivateKey(key.Value, out var _);
                 var result = Algorithm.Decrypt(payload.Value, RSAEncryptionPadding.Pkcs1);
                 return Succeed(new UnencryptedPayload(result) as IUnencryptedPayload);
             }
@@ -83,6 +73,30 @@ namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Asymmetric.RSA
         }
         public CryptoService WithRSACryptoServiceProvider() =>
             WithAlgorihm(new RSACryptoServiceProvider());
+
+        internal bool IsEncryptionKeySet;
+        public CryptoService WithEncryptionKey(IEncryptionKey key)
+        {
+            if (Algorithm is null)
+                throw new InvalidOperationException("Unable to set up encryption key. Algorithm must be denoted first");
+            if (key is null)
+                throw new ArgumentNullException(nameof(key));
+            Algorithm.ImportRSAPublicKey(key.Value, out var _);
+            IsEncryptionKeySet = true;
+            return this;
+        }
+
+        internal bool IsDecryptionKeySet;
+        public CryptoService WithDeryptionKey(IDecryptionKey key)
+        {
+            if (Algorithm is null)
+                throw new InvalidOperationException("Unable to set up decryption key. Algorithm must be denoted first");
+            if (key is null)
+                throw new ArgumentNullException(nameof(key));
+            Algorithm.ImportRSAPrivateKey(key.Value, out var _);
+            IsDecryptionKeySet = true;
+            return this;
+        }
 
         internal long DisposeCount;
         private bool IsDisposed() => 0L < Read(ref DisposeCount);

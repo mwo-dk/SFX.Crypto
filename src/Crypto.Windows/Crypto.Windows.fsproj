@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <AssemblyName>SFX.Crypto</AssemblyName>
+    <AssemblyName>SFX.Crypto.Windows</AssemblyName>
 
     <RootNamespace>SFX.Crypto.Windows</RootNamespace>
     <PackageId>SFX.Crypto.Windows</PackageId>
@@ -39,5 +39,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Crypto.Windows.CSharp\Crypto.Windows.CSharp.csproj" />
+    <ProjectReference Include="..\Crypto\Crypto.fsproj" />
   </ItemGroup>
 </Project>
