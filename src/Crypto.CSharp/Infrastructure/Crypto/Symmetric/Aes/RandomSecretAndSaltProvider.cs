@@ -42,7 +42,7 @@ namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Aes
             Algorithm = algorithm;
             return this;
         }
-        public RandomSecretAndSaltProvider Wc() =>
+        public RandomSecretAndSaltProvider WithAesCryptoServiceProvider() =>
             WithAlgorithm(new System.Security.Cryptography.AesCryptoServiceProvider());
 
         public RandomSecretAndSaltProvider WithAesManaged() =>
