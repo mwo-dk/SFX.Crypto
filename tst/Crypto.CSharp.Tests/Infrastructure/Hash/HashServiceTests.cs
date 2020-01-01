@@ -39,7 +39,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Hash
         {
             var sut = Create();
 
-            var (ok, error, result) = sut.ComputeHash(null);
+            var (ok, result, error) = sut.ComputeHash(null);
 
             Assert.False(ok);
             Assert.NotNull(error);
@@ -53,7 +53,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Hash
                 .Returns(false);
             var sut = Create();
 
-            var (ok, error, result) = sut.ComputeHash(_payload);
+            var (ok, result, error) = sut.ComputeHash(_payload);
 
             Assert.False(ok);
             Assert.NotNull(error);

@@ -43,7 +43,7 @@ namespace Crypto.Windows.CSharp.Tests.Infrastructure.Asymmetric.RSA
         {
             var sut = Create();
 
-            var (success, error, result) = sut.Encrypt(default);
+            var (success, result, error) = sut.Encrypt(default);
 
             Assert.False(success);
             Assert.NotNull(error);
@@ -57,7 +57,7 @@ namespace Crypto.Windows.CSharp.Tests.Infrastructure.Asymmetric.RSA
                 .Returns(false);
             var sut = Create();
 
-            var (success, error, result) = sut.Encrypt(_payload);
+            var (success, result, error) = sut.Encrypt(_payload);
 
             Assert.False(success);
             Assert.NotNull(error);
@@ -71,7 +71,7 @@ namespace Crypto.Windows.CSharp.Tests.Infrastructure.Asymmetric.RSA
         {
             var sut = Create();
 
-            var (success, error, result) = sut.Decrypt(default);
+            var (success, result, error) = sut.Decrypt(default);
 
             Assert.False(success);
             Assert.NotNull(error);
@@ -85,7 +85,7 @@ namespace Crypto.Windows.CSharp.Tests.Infrastructure.Asymmetric.RSA
                 .Returns(false);
             var sut = Create();
 
-            var (success, error, result) = sut.Decrypt(_coded);
+            var (success, result, error) = sut.Decrypt(_coded);
 
             Assert.False(success);
             Assert.NotNull(error);
@@ -97,7 +97,7 @@ namespace Crypto.Windows.CSharp.Tests.Infrastructure.Asymmetric.RSA
         [Property]
         public Property RoundtripWorks(NonEmptyString data)
         {
-            var (ok, _, keys) =
+            var (ok, keys, _) =
                 _keyPairProvider.GenerateKeyPair();
             if (!ok)
                 return false.ToProperty();
@@ -107,8 +107,8 @@ namespace Crypto.Windows.CSharp.Tests.Infrastructure.Asymmetric.RSA
                 .WithEncryptionKey(encryptionKey)
                 .WithDeryptionKey(decryptionKey);
 
-            var (_, _, coded) = sut.Encrypt(payload);
-            var (_, _, unencoded) = sut.Decrypt(coded);
+            var (_, coded, _) = sut.Encrypt(payload);
+            var (_, unencoded, _) = sut.Decrypt(coded);
 
             var result = Encoding.UTF8.GetString(unencoded.Value);
 

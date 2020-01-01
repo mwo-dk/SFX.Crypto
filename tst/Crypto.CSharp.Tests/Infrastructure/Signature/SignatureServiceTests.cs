@@ -46,7 +46,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
         {
             var sut = new SignatureService();
 
-            var (success, error, result) = sut.SignPayload(_payload);
+            var (success, result, error) = sut.SignPayload(_payload);
 
             Assert.False(success);
             Assert.NotNull(error);
@@ -55,7 +55,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
 
             sut = new SignatureService().WithSHA512();
 
-            (success, error, result) = sut.SignPayload(_payload);
+            (success, result, error) = sut.SignPayload(_payload);
 
             Assert.False(success);
             Assert.NotNull(error);
@@ -64,7 +64,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
 
             sut = new SignatureService().WithPkcs1();
 
-            (success, error, result) = sut.SignPayload(_payload);
+            (success, result, error) = sut.SignPayload(_payload);
 
             Assert.False(success);
             Assert.NotNull(error);
@@ -78,7 +78,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
             var (publicKey, privateKey) = CreateKeyPair();
             var sut = Create(publicKey, privateKey);
 
-            var (success, error, result) = sut.SignPayload(default);
+            var (success, result, error) = sut.SignPayload(default);
 
             Assert.False(success);
             Assert.NotNull(error);
@@ -93,7 +93,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
             CallTo(() => _payload.IsValid())
                 .Returns(false);
 
-            var (success, error, result) = sut.SignPayload(_payload);
+            var (success, result, error) = sut.SignPayload(_payload);
 
             Assert.False(success);
             Assert.NotNull(error);
@@ -107,7 +107,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
         {
             var sut = new SignatureService();
 
-            var (success, error, result) = sut.SignHash(_hash);
+            var (success, result, error) = sut.SignHash(_hash);
 
             Assert.False(success);
             Assert.NotNull(error);
@@ -116,7 +116,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
 
             sut = new SignatureService().WithSHA512();
 
-            (success, error, result) = sut.SignHash(_hash);
+            (success, result, error) = sut.SignHash(_hash);
 
             Assert.False(success);
             Assert.NotNull(error);
@@ -125,7 +125,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
 
             sut = new SignatureService().WithPkcs1();
 
-            (success, error, result) = sut.SignHash(_hash);
+            (success, result, error) = sut.SignHash(_hash);
 
             Assert.False(success);
             Assert.NotNull(error);
@@ -139,7 +139,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
             var (publicKey, privateKey) = CreateKeyPair();
             var sut = Create(publicKey, privateKey);
 
-            var (success, error, result) = sut.SignHash(default);
+            var (success, result, error) = sut.SignHash(default);
 
             Assert.False(success);
             Assert.NotNull(error);
@@ -154,7 +154,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
                 .Returns(false);
             var sut = Create(publicKey, privateKey);
 
-            var (success, error, result) = sut.SignHash(_hash);
+            var (success, result, error) = sut.SignHash(_hash);
 
             Assert.False(success);
             Assert.NotNull(error);
@@ -168,7 +168,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
         {
             var sut = new SignatureService();
 
-            var (success, error, result) = sut.VerifyPayload(_payload, _signature);
+            var (success, result, error) = sut.VerifyPayload(_payload, _signature);
 
             Assert.False(success);
             Assert.NotNull(error);
@@ -177,7 +177,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
 
             sut = new SignatureService().WithSHA512();
 
-            (success, error, result) = sut.VerifyPayload(_payload, _signature);
+            (success, result, error) = sut.VerifyPayload(_payload, _signature);
 
             Assert.False(success);
             Assert.NotNull(error);
@@ -186,7 +186,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
 
             sut = new SignatureService().WithPkcs1();
 
-            (success, error, result) = sut.VerifyPayload(_payload, _signature);
+            (success, result, error) = sut.VerifyPayload(_payload, _signature);
 
             Assert.False(success);
             Assert.NotNull(error);
@@ -200,7 +200,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
             var (publicKey, privateKey) = CreateKeyPair();
             var sut = Create(publicKey, privateKey);
 
-            var (success, error, result) = sut.VerifyPayload(default, _signature);
+            var (success, result, error) = sut.VerifyPayload(default, _signature);
 
             Assert.False(success);
             Assert.NotNull(error);
@@ -215,7 +215,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
             CallTo(() => _payload.IsValid())
                 .Returns(false);
 
-            var (success, error, result) = sut.VerifyPayload(_payload, _signature);
+            var (success, result, error) = sut.VerifyPayload(_payload, _signature);
 
             Assert.False(success);
             Assert.NotNull(error);
@@ -228,7 +228,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
             var (publicKey, privateKey) = CreateKeyPair();
             var sut = Create(publicKey, privateKey);
 
-            var (success, error, result) = sut.VerifyPayload(_payload, default);
+            var (success, result, error) = sut.VerifyPayload(_payload, default);
 
             Assert.False(success);
             Assert.NotNull(error);
@@ -243,7 +243,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
             CallTo(() => _signature.IsValid())
                 .Returns(false);
 
-            var (success, error, result) = sut.VerifyPayload(_payload, _signature);
+            var (success, result, error) = sut.VerifyPayload(_payload, _signature);
 
             Assert.False(success);
             Assert.NotNull(error);
@@ -257,7 +257,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
         {
             var sut = new SignatureService();
 
-            var (success, error, result) = sut.VerifyHash(_hash, _signature);
+            var (success, result, error) = sut.VerifyHash(_hash, _signature);
 
             Assert.False(success);
             Assert.NotNull(error);
@@ -266,7 +266,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
 
             sut = new SignatureService().WithSHA512();
 
-            (success, error, result) = sut.VerifyHash(_hash, _signature);
+            (success, result, error) = sut.VerifyHash(_hash, _signature);
 
             Assert.False(success);
             Assert.NotNull(error);
@@ -275,7 +275,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
 
             sut = new SignatureService().WithPkcs1();
 
-            (success, error, result) = sut.VerifyHash(_hash, _signature);
+            (success, result, error) = sut.VerifyHash(_hash, _signature);
 
             Assert.False(success);
             Assert.NotNull(error);
@@ -289,7 +289,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
             var (publicKey, privateKey) = CreateKeyPair();
             var sut = Create(publicKey, privateKey);
 
-            var (success, error, result) = sut.VerifyHash(default, _signature);
+            var (success, result, error) = sut.VerifyHash(default, _signature);
 
             Assert.False(success);
             Assert.NotNull(error);
@@ -304,7 +304,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
             CallTo(() => _hash.IsValid())
                 .Returns(false);
 
-            var (success, error, result) = sut.VerifyHash(_hash, _signature);
+            var (success, result, error) = sut.VerifyHash(_hash, _signature);
 
             Assert.False(success);
             Assert.NotNull(error);
@@ -317,7 +317,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
             var (publicKey, privateKey) = CreateKeyPair();
             var sut = Create(publicKey, privateKey);
 
-            var (success, error, result) = sut.VerifyHash(_hash, default);
+            var (success, result, error) = sut.VerifyHash(_hash, default);
 
             Assert.False(success);
             Assert.NotNull(error);
@@ -332,7 +332,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
             CallTo(() => _signature.IsValid())
                 .Returns(false);
 
-            var (success, error, result) = sut.VerifyHash(_hash, _signature);
+            var (success, result, error) = sut.VerifyHash(_hash, _signature);
 
             Assert.False(success);
             Assert.NotNull(error);
@@ -348,9 +348,9 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
             var payload = new Payload(Encoding.UTF8.GetBytes(data.Get));
             var sut = Create(publicKey, privateKey);
 
-            var (signOk, signError, signature) =
+            var (signOk, signature, signError) =
                 sut.SignPayload(payload);
-            var (verifyOk, verifyError, result) =
+            var (verifyOk, result, verifyError) =
                 sut.VerifyPayload(payload, signature);
 
             return (signOk && signError is null && !(signature is null) &&
@@ -368,9 +368,9 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
             var hash = new SFX.Crypto.CSharp.Model.Signature.Hash(hash_.Value.Value);
             var sut = Create(publicKey, privateKey);
 
-            var (signOk, signError, signature) =
+            var (signOk, signature, signError) =
                 sut.SignHash(hash);
-            var (verifyOk, verifyError, result) =
+            var (verifyOk, result, verifyError) =
                 sut.VerifyHash(hash, signature);
 
             return (signOk && signError is null && !(signature is null) &&
