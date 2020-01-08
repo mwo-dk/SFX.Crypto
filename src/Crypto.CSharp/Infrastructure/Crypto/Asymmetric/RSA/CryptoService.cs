@@ -76,6 +76,8 @@ namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Asymmetric.RSA
         /// <inheritdoc/>
         public ICryptoService WithEncryptionKey(IEncryptionKey key)
         {
+            if (IsDisposed())
+                throw new ObjectDisposedException(typeof(CryptoService).Name);
             if (Algorithm is null)
                 throw new InvalidOperationException("Unable to set up encryption key. Algorithm must be denoted first");
             if (key is null)
@@ -89,6 +91,8 @@ namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Asymmetric.RSA
         /// <inheritdoc/>
         public ICryptoService WithDeryptionKey(IDecryptionKey key)
         {
+            if (IsDisposed())
+                throw new ObjectDisposedException(typeof(CryptoService).Name);
             if (Algorithm is null)
                 throw new InvalidOperationException("Unable to set up decryption key. Algorithm must be denoted first");
             if (key is null)

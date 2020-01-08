@@ -102,6 +102,8 @@ namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Aes
         /// <inheritdoc/>
         public ICryptoService WithSecret(ISecret secret)
         {
+            if (IsDisposed())
+                throw new ObjectDisposedException(typeof(CryptoService).Name);
             if (Algorithm is null)
                 throw new InvalidOperationException("Unable to set up secret. Algorithm must be denoted first");
             if (secret is null)
@@ -115,6 +117,8 @@ namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Aes
         /// <inheritdoc/>
         public ICryptoService WithSalt(ISalt salt)
         {
+            if (IsDisposed())
+                throw new ObjectDisposedException(typeof(CryptoService).Name);
             if (Algorithm is null)
                 throw new InvalidOperationException("Unable to set up salt. Algorithm must be denoted first");
             if (salt is null)
