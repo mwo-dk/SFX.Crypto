@@ -133,6 +133,8 @@ namespace SFX.Crypto.CSharp.Infrastructure.Signature
             ValidAlgorithms.Contains(name);
         private SignatureService WithHashAlgorithm(HashAlgorithmName name)
         {
+            if (IsDisposed())
+                throw new ObjectDisposedException(typeof(SignatureService).Name);
             HashAlgorithm = name;
             IsValidHashAlgoritmSet = IsValidAlgorithm(name);
             return this;
@@ -154,6 +156,8 @@ namespace SFX.Crypto.CSharp.Infrastructure.Signature
             !(padding is null) && ValidPaddings.Contains(padding);
         private SignatureService WithPadding(RSASignaturePadding padding)
         {
+            if (IsDisposed())
+                throw new ObjectDisposedException(typeof(SignatureService).Name);
             Padding = padding;
             IsValidPaddingSet = IsValidPadding(padding);
             return this;
@@ -166,6 +170,8 @@ namespace SFX.Crypto.CSharp.Infrastructure.Signature
         internal bool IsValidSigningKeySet;
         public SignatureService WithSigningKey(ISigningKey signingKey)
         {
+            if (IsDisposed())
+                throw new ObjectDisposedException(typeof(SignatureService).Name);
             if (signingKey is null)
                 throw new ArgumentNullException(nameof(signingKey));
             if (!signingKey.IsValid())
@@ -178,6 +184,8 @@ namespace SFX.Crypto.CSharp.Infrastructure.Signature
         internal bool IsValidVerificationKeySet;
         public SignatureService WithVerificationKey(IVerificationKey verificationKey)
         {
+            if (IsDisposed())
+                throw new ObjectDisposedException(typeof(SignatureService).Name);
             if (verificationKey is null)
                 throw new ArgumentNullException(nameof(verificationKey));
             if (!verificationKey.IsValid())
