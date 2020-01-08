@@ -1,8 +1,9 @@
 name: .NET Core
 
-on:  push:
-    branches-ignore:
-        - master
+on:  
+    push:
+        branches-ignore:
+            - master
 
 jobs:
   build:
