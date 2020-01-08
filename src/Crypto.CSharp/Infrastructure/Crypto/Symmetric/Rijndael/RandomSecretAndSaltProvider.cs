@@ -1,10 +1,10 @@
-﻿using SFX.Crypto.CSharp.Model.Crypto.Symmetric.Aes;
+﻿using SFX.Crypto.CSharp.Model.Crypto.Symmetric.Rijndael;
 using SFX.ROP.CSharp;
 using System;
 using System.Security.Cryptography;
 using static SFX.ROP.CSharp.Library;
 
-namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Aes
+namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Rijndael
 {
     /// <summary>
     /// Implements <see cref="IRandomSecretAndSaltProvider"/>

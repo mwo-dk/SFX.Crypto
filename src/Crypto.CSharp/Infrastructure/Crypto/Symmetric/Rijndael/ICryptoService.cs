@@ -1,7 +1,7 @@
-﻿using SFX.Crypto.CSharp.Model.Crypto.Asymmetric.RSA;
+﻿using SFX.Crypto.CSharp.Model.Crypto.Symmetric.Rijndael;
 using SFX.ROP.CSharp;
 
-namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Asymmetric.RSA
+namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Rijndael
 {
     /// <summary>
     /// Interface describing the capability to encrypt and unencrypt data based on
@@ -10,14 +10,14 @@ namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Asymmetric.RSA
     public interface ICryptoService
     {
         /// <summary>
-        /// Encrypts the provided <paramref name="payload"/> based on the provided <paramref name="key"/>
+        /// Encrypts the provided <paramref name="payload"/> based on the provided <paramref name="secret"/> and <paramref name="salt"/>
         /// </summary>
         /// <param name="payload">The <see cref="IUnencryptedPayload"/> to encrypt</param>
         /// <returns><paramref name="payload"/> encrypted</returns>
         Result<IEncryptedPayload> Encrypt(IUnencryptedPayload payload);
 
         /// <summary>
-        /// Decrypts the provided <paramref name="payload"/> based on the provided <paramref name="key"/>
+        /// Decrypts the provided <paramref name="payload"/> based on the provided <paramref name="secret"/> and <paramref name="salt"/>
         /// </summary>
         /// <param name="payload">The <see cref="IEncryptedPayload"/> to decrypt</param>
         /// <returns><paramref name="payload"/> decrypted</returns>
@@ -28,20 +28,20 @@ namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Asymmetric.RSA
         /// </summary>
         /// <param name="algorithm">The algorithm to use</param>
         /// <returns>The current instance</returns>
-        ICryptoService WithAlgorihm(System.Security.Cryptography.RSA algorithm);
+        ICryptoService WithAlgorihm(System.Security.Cryptography.Rijndael algorithm);
 
         /// <summary>
-        /// Instruments the service to use the provided <paramref name="key"/> for encryption
+        /// Instruments the service to utilize the provided <paramref name="secret"/>
         /// </summary>
-        /// <param name="key">The key utilized for encryption</param>
+        /// <param name="secret">The secret to utilize</param>
         /// <returns>The current instance</returns>
-        ICryptoService WithEncryptionKey(IEncryptionKey key);
+        ICryptoService WithSecret(ISecret secret);
 
         /// <summary>
-        /// Instruments the service to use the provided <paramref name="key"/> for decryption
+        /// Instruments the service to utilize the provided <paramref name="secret"/>
         /// </summary>
-        /// <param name="key">The key utilized for decryption</param>
+        /// <param name="secret">The secret to utilize</param>
         /// <returns>The current instance</returns>
-        ICryptoService WithDeryptionKey(IDecryptionKey key);
+        ICryptoService WithSalt(ISalt salt);
     }
 }

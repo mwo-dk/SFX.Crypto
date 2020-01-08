@@ -38,7 +38,8 @@ namespace SFX.Crypto.CSharp.Infrastructure.Hashing
 
         private HashAlgorithm Algorithm;
 
-        internal HashService WithAlgorithm(HashAlgorithm algorithm)
+        /// <inheritdoc/>
+        public IHashService WithAlgorithm(HashAlgorithm algorithm)
         {
             if (IsDisposed())
                 throw new ObjectDisposedException(typeof(HashService).Name);
@@ -48,24 +49,6 @@ namespace SFX.Crypto.CSharp.Infrastructure.Hashing
             Algorithm = algorithm;
             return this;
         }
-        public HashService WithSHA1CryptoServiceProvider() =>
-            WithAlgorithm(new SHA1CryptoServiceProvider());
-        public HashService WithSHA1Managed() =>
-            WithAlgorithm(new SHA1Managed());
-        public HashService WithSHA256CryptoServiceProvider() =>
-            WithAlgorithm(new SHA256CryptoServiceProvider());
-        public HashService WithSHA256Managed() =>
-            WithAlgorithm(new SHA256Managed());
-        public HashService WithSHA384CryptoServiceProvider() =>
-            WithAlgorithm(new SHA384CryptoServiceProvider());
-        public HashService WithSHA384Managed() =>
-            WithAlgorithm(new SHA384Managed());
-        public HashService WithSHA512CryptoServiceProvider() =>
-            WithAlgorithm(new SHA512CryptoServiceProvider());
-        public HashService WithSHA512Managed() =>
-            WithAlgorithm(new SHA512Managed());
-        public HashService WithMD5CryptoServiceProvider() =>
-            WithAlgorithm(new MD5CryptoServiceProvider());
 
         internal long DisposeCount;
         private bool IsDisposed() => 0L < Read(ref DisposeCount);
@@ -76,5 +59,27 @@ namespace SFX.Crypto.CSharp.Infrastructure.Hashing
 
             Algorithm?.Dispose();
         }
+    }
+
+    public static class HashServiceExtensions
+    {
+        public static IHashService WithSHA1CryptoServiceProvider(this IHashService service) =>
+            service?.WithAlgorithm(new SHA1CryptoServiceProvider());
+        public static IHashService WithSHA1Managed(this IHashService service) =>
+            service?.WithAlgorithm(new SHA1Managed());
+        public static IHashService WithSHA256CryptoServiceProvider(this IHashService service) =>
+            service?.WithAlgorithm(new SHA256CryptoServiceProvider());
+        public static IHashService WithSHA256Managed(this IHashService service) =>
+            service?.WithAlgorithm(new SHA256Managed());
+        public static IHashService WithSHA384CryptoServiceProvider(this IHashService service) =>
+            service?.WithAlgorithm(new SHA384CryptoServiceProvider());
+        public static IHashService WithSHA384Managed(this IHashService service) =>
+            service?.WithAlgorithm(new SHA384Managed());
+        public static IHashService WithSHA512CryptoServiceProvider(this IHashService service) =>
+            service?.WithAlgorithm(new SHA512CryptoServiceProvider());
+        public static IHashService WithSHA512Managed(this IHashService service) =>
+            service?.WithAlgorithm(new SHA512Managed());
+        public static IHashService WithMD5CryptoServiceProvider(this IHashService service) =>
+            service?.WithAlgorithm(new MD5CryptoServiceProvider());
     }
 }

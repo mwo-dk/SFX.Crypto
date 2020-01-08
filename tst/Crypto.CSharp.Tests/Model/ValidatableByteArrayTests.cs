@@ -77,6 +77,16 @@ namespace Crypto.CSharp.Tests.Model
         public sealed class UnencryptedPayloadTests : GenericTest<UnencryptedPayload, IUnencryptedPayload, IValidatable> { }
     }
 
+    namespace Rijndael
+    {
+        using SFX.Crypto.CSharp.Model.Crypto.Symmetric.Rijndael;
+
+        public sealed class SecretTests : GenericTest<Secret, ISecret, IValidatable> { }
+        public sealed class SaltTests : GenericTest<Salt, ISalt, IValidatable> { }
+        public sealed class EncryptedPayloadTests : GenericTest<EncryptedPayload, IEncryptedPayload, IValidatable> { }
+        public sealed class UnencryptedPayloadTests : GenericTest<UnencryptedPayload, IUnencryptedPayload, IValidatable> { }
+    }
+
     namespace SHA512
     {
         using SFX.Crypto.CSharp.Model.Hashing;
