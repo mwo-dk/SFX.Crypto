@@ -14,9 +14,10 @@ Hashing is supported by the ```HashService``` class, that lives in the namespace
 
 ``` csharp
 public interface IHashService
-{
-    Result<IHash> ComputeHash(IPayload payload);
-}
+    {
+        Result<IHash> ComputeHash(IPayload payload);
+        IHashService WithAlgorithm(HashAlgorithm algorithm);
+    }
 ```
 
 Where the two *model* types ```IHash``` and ```IPayload``` are simple placeholders of byte arrays:
@@ -80,12 +81,18 @@ Encryption is supported by the type ```CryptoService``` in the namespace ```SFX.
 ``` csharp
 public interface ICryptoService
 {
-    Result<IEncryptedPayload> Encrypt(IUnencryptedPayload payload);
-    Result<IUnencryptedPayload> Decrypt(IEncryptedPayload payload);
+     public interface ICryptoService
+    {
+        Result<IEncryptedPayload> Encrypt(IUnencryptedPayload payload);
+        Result<IUnencryptedPayload> Decrypt(IEncryptedPayload payload);
+        ICryptoService WithAlgorihm(System.Security.Cryptography.RSA algorithm);
+        ICryptoService WithEncryptionKey(IEncryptionKey key);
+        ICryptoService WithDeryptionKey(IDecryptionKey key);
+    }
 }
 ```
 
-Where the parameeters should be very obvious (the extend ```IValidatable```). 
+Where the parameters should be very obvious (they extend ```IValidatable``` apart from the algoritm). 
 
 In order to utilize the service, it has to be initialized with one of:
 
@@ -133,23 +140,30 @@ For symmetric encryption, only Aes-kind of algorithms have been provided. Paddin
 
 ##### (I)CryptoService
 
-Encryption is supported by the type ```CryptoService``` in the namespace ```SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Aes``` and implements the interface ```ICryptoService```:
+Encryption is supported by the types ```CryptoService``` in the namespaces ```SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Aes``` and  ```SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Rijndael``` and implements the interface ```ICryptoService```:
 
 ``` csharp
 public interface ICryptoService
-{
-    Result<IEncryptedPayload> Encrypt(IUnencryptedPayload payload);
-    Result<IUnencryptedPayload> Decrypt(IEncryptedPayload payload);
-}
+    {
+        Result<IEncryptedPayload> Encrypt(IUnencryptedPayload payload);
+        Result<IUnencryptedPayload> Decrypt(IEncryptedPayload payload);
+        ICryptoService WithAlgorihm(System.Security.Cryptography.Aes algorithm);
+        ICryptoService WithSecret(ISecret secret);
+        ICryptoService WithSalt(ISalt salt);
+    }
 ```
 
-Where the parameeters should be very obvious (the extend ```IValidatable```). 
+Where the parameeters should be very obvious (they extend ```IValidatable``` apart from the algoritm); in the Rijndael namespace, the algorithm of course extend ```System.Security.Cryptography.Aes```. 
 
-In order to utilize the service, it has to be initialized with one of:
+In order to utilize the service, it has to be initialized with one of (for Aes):
 
 * ```WithAesCryptoServiceProvider() -> CryptoService``` tells the ```CryptoService``` to utilize the standard [```AesCryptoServiceProvider```](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.aescryptoserviceprovider?view=netframework-4.8).
 * ```WithAesManaged() -> CryptoService``` tells the ```CryptoService``` to utilize the standard [```AesManaged```](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.aesmanaged?view=netframework-4.8).
 * ```WithAesCng() -> CryptoService``` tells the ```CryptoService``` to utilize the standard [```AesCng```](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.aescng?view=netframework-4.8).
+
+and for Rijndael we have:
+
+* ```WithRijndaelManaged() -> CryptoService``` tells the ```CryptoService``` to utilize the standard [```RijndaelManaged```](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.rijndaelmanaged?view=netframework-4.8).
 
 Besides this - and **after** setting up the algorithm, in order to perform a successful encryption or decryption, the method ```WithSecret(ISecret) -> CryptoService``` and ```WithSalt(ISalt) -> CryptoService``` both have to be invoked. 
 
@@ -166,14 +180,21 @@ Similar to the ```RandomKeyPairProvider``` for RSA, we have a ```RandomSecretAnd
 public interface IRandomSecretAndSaltProvider
 {
     Result<(ISecret Secret, ISalt Salt)> GenerateKeyPair();
+    IRandomSecretAndSaltProvider WithAlgorithm(System.Security.Cryptography.Aes algorithm);
 }
 ```
 
+Where the listener is assumed to be able to figure out a little signature difference in the Rijndael case.
+
 That similar to the above must be initialized with one of the following:
 
-* ```WithAesCryptoServiceProvider -> CryptoService```,
-* ```WithAesManaged -> CryptoService``` or
-* ```WithAesCng -> CryptoService``` (available in the Windows package)
+* ```WithAesCryptoServiceProvider() -> CryptoService```,
+* ```WithAesManaged() -> CryptoService``` or
+* ```WithAesCng() -> CryptoService``` (available in the Windows package)
+
+and in the Rijndael case:
+
+* ```WithRijndaelManaged() -> CryptoService```
 
 ### Signing
 
@@ -531,6 +552,10 @@ match generateKeyPair() with
     salt |> useTheSaltForWhatever
 | Failure error -> error |> tellAboutItTosOleg
 ```
+
+##### SFX.Crypto.Encryption.Symmetric.Rijndael
+
+Similar as for Aes above, there are parallel implementations for Rijndael (which Aes is also), and we shall not add more to that tale.
 
 ### Signing
 
