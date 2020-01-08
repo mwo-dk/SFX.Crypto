@@ -1,29 +1,37 @@
 ﻿using FakeItEasy;
 using FsCheck;
 using FsCheck.Xunit;
-using SFX.Crypto.CSharp.Infrastructure.Crypto.Asymmetric.RSA;
-using SFX.Crypto.CSharp.Model.Crypto.Asymmetric.RSA;
+using SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Rijndael;
+using SFX.Crypto.CSharp.Model.Crypto.Symmetric.Rijndael;
 using System;
 using System.Text;
 using Xunit;
 using static FakeItEasy.A;
 
-namespace Crypto.Windows.CSharp.Tests.Infrastructure.Asymmetric.RSA
+namespace Crypto.CSharp.Tests.Infrastructure.Crypto.Symmetric.Rijndael
 {
-    public class CryptoServiceTests
+    public sealed class CryptoServiceTests
     {
         #region Members
-        private readonly RandomKeyPairProvider _keyPairProvider;
+        private readonly RandomSecretAndSaltProvider _keyProvider;
+
         private readonly IUnencryptedPayload _payload;
+
         private readonly IEncryptedPayload _coded;
+        private readonly ISecret _secret;
+        private readonly ISalt _salt;
         #endregion
 
         #region Test initialization
         public CryptoServiceTests()
         {
-            _keyPairProvider = new RandomKeyPairProvider();
+            _keyProvider = new RandomSecretAndSaltProvider();
+            _keyProvider.WithAesCryptoServiceProvider();
+
             _payload = Fake<IUnencryptedPayload>();
             _coded = Fake<IEncryptedPayload>();
+            _secret = Fake<ISecret>();
+            _salt = Fake<ISalt>();
         }
         #endregion
 
@@ -95,17 +103,27 @@ namespace Crypto.Windows.CSharp.Tests.Infrastructure.Asymmetric.RSA
 
         #region Roundtrip works
         [Property]
-        public Property RoundtripWorks(NonEmptyString data)
+        public Property RoundtripAesCryptoServiceProviderWorks(NonEmptyString data)
         {
-            var (ok, keys, _) =
-                _keyPairProvider.GenerateKeyPair();
-            if (!ok)
-                return false.ToProperty();
-            var (encryptionKey, decryptionKey) = keys;
+            var (secret, salt) = CreateKeyPair();
             var payload = new UnencryptedPayload(Encoding.UTF8.GetBytes(data.Get));
-            var sut = Create()
-                .WithEncryptionKey(encryptionKey)
-                .WithDeryptionKey(decryptionKey);
+            var sut = Create();
+
+            var (_, coded, _) = sut.Encrypt(payload);
+            var (_, unencoded, _) = sut.Decrypt(coded);
+
+            var result = Encoding.UTF8.GetString(unencoded.Value);
+
+            return (0 == string.Compare(data.Get, result, StringComparison.InvariantCulture)).ToProperty();
+        }
+
+        [Property]
+        public Property RoundAesManagedtripWorks(NonEmptyString data)
+        {
+            _keyProvider.WithAesManaged();
+            var (secret, salt) = CreateKeyPair();
+            var payload = new UnencryptedPayload(Encoding.UTF8.GetBytes(data.Get));
+            var sut = Create().WithRijndaelManaged();
 
             var (_, coded, _) = sut.Encrypt(payload);
             var (_, unencoded, _) = sut.Decrypt(coded);
@@ -120,9 +138,12 @@ namespace Crypto.Windows.CSharp.Tests.Infrastructure.Asymmetric.RSA
         private CryptoService Create()
         {
             var result = new CryptoService();
-            result.WithRSACng();
+            result.WithRijndaelManaged();
             return result;
         }
+
+        private (ISecret Secret, ISalt Salt) CreateKeyPair() =>
+            _keyProvider.GenerateKeyPair();
         #endregion
     }
 }

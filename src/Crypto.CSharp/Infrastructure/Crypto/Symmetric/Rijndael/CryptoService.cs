@@ -1,4 +1,4 @@
-﻿using SFX.Crypto.CSharp.Model.Crypto.Symmetric.Aes;
+﻿using SFX.Crypto.CSharp.Model.Crypto.Symmetric.Rijndael;
 using SFX.ROP.CSharp;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Security.Cryptography;
 using static SFX.ROP.CSharp.Library;
 using static System.Threading.Interlocked;
 
-namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Aes
+namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Rijndael
 {
     /// <summary>
     /// Implements <see cref="ICryptoService"/>
@@ -81,10 +81,10 @@ namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Aes
             }
         }
 
-        private System.Security.Cryptography.Aes Algorithm;
+        private System.Security.Cryptography.Rijndael Algorithm;
 
         /// <inheritdoc/>
-        public ICryptoService WithAlgorihm(System.Security.Cryptography.Aes algorithm)
+        public ICryptoService WithAlgorihm(System.Security.Cryptography.Rijndael algorithm)
         {
             if (IsDisposed())
                 throw new ObjectDisposedException(typeof(CryptoService).Name);
@@ -138,18 +138,11 @@ namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Aes
     public static class CryptoServiceExtensions
     {
         /// <summary>
-        /// Instruments <paramref name="service"/> to utilize <see cref="AesCryptoServiceProvider"/>
+        /// Instruments <paramref name="service"/> to utilize <see cref="RijndaelManaged"/>
         /// </summary>
         /// <param name="service"></param>
         /// <returns><paramref name="service"/></returns>
-        public static ICryptoService WithAesCryptoServiceProvider(this ICryptoService service) =>
-            service?.WithAlgorihm(new AesCryptoServiceProvider());
-        /// <summary>
-        /// Instruments <paramref name="service"/> to utilize <see cref="AesManaged"/>
-        /// </summary>
-        /// <param name="service"></param>
-        /// <returns><paramref name="service"/></returns>
-        public static ICryptoService WithAesManaged(this ICryptoService service) =>
-            service?.WithAlgorihm(new AesManaged());
+        public static ICryptoService WithRijndaelManaged(this ICryptoService service) =>
+            service?.WithAlgorihm(new RijndaelManaged());
     }
 }

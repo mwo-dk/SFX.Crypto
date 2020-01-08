@@ -113,8 +113,12 @@ namespace Crypto.CSharp.Tests.Infrastructure.Crypto.Asymmetric.RSA
         #endregion
 
         #region Helpers
-        private CryptoService Create() => 
-            new CryptoService().WithRSACryptoServiceProvider();
+        private CryptoService Create()
+        {
+            var result = new CryptoService();
+            result.WithRSACryptoServiceProvider();
+            return result;
+        }
         #endregion
     }
 }

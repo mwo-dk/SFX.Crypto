@@ -5,8 +5,8 @@ namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Asymmetric.RSA
 {
     public static class CryptoServiceExtensions
     {
-        public static CryptoService WithRSACng(this CryptoService service) =>
-            service.WithAlgorihm(new RSACng());
+        public static ICryptoService WithRSACng(this ICryptoService service) =>
+            service?.WithAlgorihm(new RSACng());
     }
 
     public static class RandomKeyPairProviderExtensionsEx

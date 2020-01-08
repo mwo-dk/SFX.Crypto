@@ -59,8 +59,8 @@ namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Asymmetric.RSA
         }
 
         private System.Security.Cryptography.RSA Algorithm;
-
-        internal CryptoService WithAlgorihm(System.Security.Cryptography.RSA algorithm)
+        /// <inheritdoc/>
+        public ICryptoService WithAlgorihm(System.Security.Cryptography.RSA algorithm)
         {
             if (IsDisposed())
                 throw new ObjectDisposedException(typeof(CryptoService).Name);
@@ -71,11 +71,10 @@ namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Asymmetric.RSA
             Algorithm = algorithm;
             return this;
         }
-        public CryptoService WithRSACryptoServiceProvider() =>
-            WithAlgorihm(new RSACryptoServiceProvider());
 
         internal bool IsEncryptionKeySet;
-        public CryptoService WithEncryptionKey(IEncryptionKey key)
+        /// <inheritdoc/>
+        public ICryptoService WithEncryptionKey(IEncryptionKey key)
         {
             if (Algorithm is null)
                 throw new InvalidOperationException("Unable to set up encryption key. Algorithm must be denoted first");
@@ -87,7 +86,8 @@ namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Asymmetric.RSA
         }
 
         internal bool IsDecryptionKeySet;
-        public CryptoService WithDeryptionKey(IDecryptionKey key)
+        /// <inheritdoc/>
+        public ICryptoService WithDeryptionKey(IDecryptionKey key)
         {
             if (Algorithm is null)
                 throw new InvalidOperationException("Unable to set up decryption key. Algorithm must be denoted first");
@@ -107,5 +107,16 @@ namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Asymmetric.RSA
 
             Algorithm?.Dispose();
         }
+    }
+
+    public static class CryptoServiceExtensions
+    {
+        /// <summary>
+        /// Instruments <paramref name="service"/> to utilize <see cref="RSACryptoServiceProvider"/>
+        /// </summary>
+        /// <param name="service"></param>
+        /// <returns><paramref name="service"/></returns>
+        public static ICryptoService WithRSACryptoServiceProvider(this ICryptoService service) =>
+            service?.WithAlgorihm(new RSACryptoServiceProvider());
     }
 }

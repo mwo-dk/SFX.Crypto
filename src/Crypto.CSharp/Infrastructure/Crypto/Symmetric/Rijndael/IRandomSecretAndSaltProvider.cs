@@ -1,7 +1,7 @@
-﻿using SFX.Crypto.CSharp.Model.Crypto.Symmetric.Aes;
+﻿using SFX.Crypto.CSharp.Model.Crypto.Symmetric.Rijndael;
 using SFX.ROP.CSharp;
 
-namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Aes
+namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Rijndael
 {
     /// <summary>
     /// Interface describing the capability to generate secret and salt

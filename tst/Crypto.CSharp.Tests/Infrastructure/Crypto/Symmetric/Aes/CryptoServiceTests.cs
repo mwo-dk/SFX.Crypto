@@ -25,8 +25,8 @@ namespace Crypto.CSharp.Tests.Infrastructure.Crypto.Symmetric.Aes
         #region Test initialization
         public CryptoServiceTests()
         {
-            _keyProvider = new RandomSecretAndSaltProvider()
-                .WithAesCryptoServiceProvider();
+            _keyProvider = new RandomSecretAndSaltProvider();
+            _keyProvider.WithAesCryptoServiceProvider();
 
             _payload = Fake<IUnencryptedPayload>();
             _coded = Fake<IEncryptedPayload>();
@@ -135,8 +135,12 @@ namespace Crypto.CSharp.Tests.Infrastructure.Crypto.Symmetric.Aes
         #endregion
 
         #region Helpers
-        private CryptoService Create() => new CryptoService()
-            .WithAesCryptoServiceProvider();
+        private CryptoService Create()
+        {
+            var result = new CryptoService();
+            result.WithAesCryptoServiceProvider();
+            return result;
+        }
 
         private (ISecret Secret, ISalt Salt) CreateKeyPair() =>
             _keyProvider.GenerateKeyPair();
