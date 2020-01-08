@@ -19,7 +19,3 @@ jobs:
     - name: Test
       run: 
         dotnet test ./SFX.Crypto.sln --configuration Release 
-        # dotnet test ./tst/Crypto.CSharp.Tests/Crypto.CSharp.Tests.csproj
-        # dotnet test ./tst/Crypto.Windows.CSharp.Tests/Crypto.Windows.CSharp.Tests.csproj
-        # dotnet test ./tst/Crypto.Tests/Crypto.Tests.fsproj
-        # dotnet test ./tst/Crypto.Windows.Tests/Crypto.Windows.Tests.fsproj
