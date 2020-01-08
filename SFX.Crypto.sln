@@ -18,11 +18,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".solution", ".solution", "{5A505C8E-E29D-4073-873B-2474D9E26A5F}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
-		.github\workflows\build-win.yml = .github\workflows\build-win.yml
 		.github\workflows\build.yml = .github\workflows\build.yml
 		src\Directory.Build.props = src\Directory.Build.props
-		.github\workflows\pr-csharp-win.yml = .github\workflows\pr-csharp-win.yml
-		.github\workflows\pr-fsharp-win.yml = .github\workflows\pr-fsharp-win.yml
 		.github\workflows\pr.yml = .github\workflows\pr.yml
 		README.md = README.md
 	EndProjectSection

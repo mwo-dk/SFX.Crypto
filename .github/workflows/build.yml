@@ -1,11 +1,13 @@
 name: .NET Core
 
 on:  push
+    branches-ignore:
+        - master
 
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v1
@@ -13,9 +15,10 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.100
-    - name: Build 
-      run: dotnet build --configuration Release
     - name: Test
-      run: | 
-        dotnet test ./tst/Crypto.CSharp.Tests/Crypto.CSharp.Tests.csproj
-        dotnet test ./tst/Crypto.Tests/Crypto.Tests.fsproj
+      run: 
+        dotnet test ./SFX.Crypto.sln --configuration Release 
+        # dotnet test ./tst/Crypto.CSharp.Tests/Crypto.CSharp.Tests.csproj
+        # dotnet test ./tst/Crypto.Windows.CSharp.Tests/Crypto.Windows.CSharp.Tests.csproj
+        # dotnet test ./tst/Crypto.Tests/Crypto.Tests.fsproj
+        # dotnet test ./tst/Crypto.Windows.Tests/Crypto.Windows.Tests.fsproj
