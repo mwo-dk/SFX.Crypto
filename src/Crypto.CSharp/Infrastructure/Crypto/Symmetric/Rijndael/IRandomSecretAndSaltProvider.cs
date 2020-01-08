@@ -19,6 +19,6 @@ namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Rijndael
         /// </summary>
         /// <param name="algorithm">The algorithm to use</param>
         /// <returns>The current instance</returns>
-        IRandomSecretAndSaltProvider WithAlgorithm(System.Security.Cryptography.Aes algorithm);
+        IRandomSecretAndSaltProvider WithAlgorithm(System.Security.Cryptography.Rijndael algorithm);
     }
 }

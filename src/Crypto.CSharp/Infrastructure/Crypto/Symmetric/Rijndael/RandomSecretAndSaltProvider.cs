@@ -12,7 +12,7 @@ namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Rijndael
     public sealed class RandomSecretAndSaltProvider : IRandomSecretAndSaltProvider
     {
         public RandomSecretAndSaltProvider() =>
-            Algorithm = new AesCryptoServiceProvider();
+            Algorithm = new RijndaelManaged();
 
         /// <inheritdoc/>
         public Result<(ISecret Secret, ISalt Salt)> GenerateKeyPair()
@@ -33,9 +33,9 @@ namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Rijndael
             }
         }
 
-        internal System.Security.Cryptography.Aes Algorithm;
+        internal System.Security.Cryptography.Rijndael Algorithm;
         /// <inheritdoc/>
-        public IRandomSecretAndSaltProvider WithAlgorithm(System.Security.Cryptography.Aes algorithm)
+        public IRandomSecretAndSaltProvider WithAlgorithm(System.Security.Cryptography.Rijndael algorithm)
         {
             if (!(Algorithm is null))
                 Algorithm.Dispose();
@@ -48,18 +48,11 @@ namespace SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Rijndael
     public static class RandomSecretAndSaltProviderExtensions
     {
         /// <summary>
-        /// Instruments <paramref name="service"/> to utilize <see cref="AesCryptoServiceProvider"/>
+        /// Instruments <paramref name="service"/> to utilize <see cref="RijndaelManaged"/>
         /// </summary>
         /// <param name="service"></param>
         /// <returns><paramref name="service"/></returns>
-        public static IRandomSecretAndSaltProvider WithAesCryptoServiceProvider(this IRandomSecretAndSaltProvider service) =>
-            service?.WithAlgorithm(new AesCryptoServiceProvider());
-        /// <summary>
-        /// Instruments <paramref name="service"/> to utilize <see cref="AesManaged"/>
-        /// </summary>
-        /// <param name="service"></param>
-        /// <returns><paramref name="service"/></returns>
-        public static IRandomSecretAndSaltProvider WithAesManaged(this IRandomSecretAndSaltProvider service) =>
-            service?.WithAlgorithm(new AesManaged());
+        public static IRandomSecretAndSaltProvider WithRijndaelManaged(this IRandomSecretAndSaltProvider service) =>
+            service?.WithAlgorithm(new RijndaelManaged());
     }
 }

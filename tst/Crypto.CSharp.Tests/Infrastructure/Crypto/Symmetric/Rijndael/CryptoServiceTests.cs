@@ -26,7 +26,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Crypto.Symmetric.Rijndael
         public CryptoServiceTests()
         {
             _keyProvider = new RandomSecretAndSaltProvider();
-            _keyProvider.WithAesCryptoServiceProvider();
+            _keyProvider.WithRijndaelManaged();
 
             _payload = Fake<IUnencryptedPayload>();
             _coded = Fake<IEncryptedPayload>();
@@ -120,7 +120,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Crypto.Symmetric.Rijndael
         [Property]
         public Property RoundAesManagedtripWorks(NonEmptyString data)
         {
-            _keyProvider.WithAesManaged();
+            _keyProvider.WithRijndaelManaged();
             var (secret, salt) = CreateKeyPair();
             var payload = new UnencryptedPayload(Encoding.UTF8.GetBytes(data.Get));
             var sut = Create().WithRijndaelManaged();

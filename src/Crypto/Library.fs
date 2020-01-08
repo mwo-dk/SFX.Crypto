@@ -262,9 +262,96 @@ module Encryption =
                     /// Instruments the CryptoService to utilize AesCryptoServiceProvider
                     let withAesCryptoServiceProvider() =
                         service.WithAesCryptoServiceProvider()
-                    /// Instruments the CryptoService to utilize v
+                    /// Instruments the CryptoService to utilize AesManaged
                     let WithAesManaged() =
                         service.WithAesManaged()
+
+                    /// Encrypts the provided payload
+                    let encrypt payload = service |> Data.encrypt payload
+                    /// Decrypts the provided payload
+                    let decrypt payload = service |> Data.decrypt payload
+
+                module Key =
+                    let internal keyProvider = RandomSecretAndSaltProvider()
+
+                    /// Generates a key pair
+                    let generateKeyPair() = keyProvider |> Key.generateKeyPair
+
+        module Rijndael =
+            open SFX.Crypto.CSharp.Infrastructure.Crypto.Symmetric.Rijndael
+            
+            /// Represents the secret to utilize in Rijndael encryption
+            type Secret = {Value: byte array}
+            /// Represents the salt to utilize in Rijndael encryption
+            type Salt = {Value: byte array}
+            
+            let private toSecret (x: Secret) =
+                CSharp.Model.Crypto.Symmetric.Rijndael.Secret(x.Value)
+            let private fromSecret (x: CSharp.Model.Crypto.Symmetric.Rijndael.ISecret) : Secret =
+                {Value = x.Value}
+            let private toSalt (x: Salt) =
+                CSharp.Model.Crypto.Symmetric.Rijndael.Salt(x.Value)
+            let private fromSalt (x: CSharp.Model.Crypto.Symmetric.Rijndael.ISalt) : Salt =
+                {Value = x.Value}
+            
+            module Data =
+                /// Creates a CryptoService
+                let createService() = new CryptoService()
+                /// Instruments the CryptoService to utilize RijndaelManaged
+                let withRijndaelManaged (x: CryptoService) =
+                    x.WithRijndaelManaged()
+                /// Instruments the CryptoService to utilize the provided secret
+                let withSecret secret (x: CryptoService) =
+                    x.WithSecret(secret |> toSecret)
+                /// Instruments the CryptoService to utilize the provided secret
+                let withSalt salt (x: CryptoService) =
+                    x.WithSalt(salt |> toSalt)
+
+                /// Represents an unencrypted payload
+                type UnencryptedPayload = {Value: byte array}
+                /// Represents an encrypted payload
+                type EncryptedPayload = {Value: byte array}
+
+                let private toUnencryptedPayload (x: UnencryptedPayload) = 
+                    CSharp.Model.Crypto.Symmetric.Rijndael.UnencryptedPayload(x.Value)
+                let private fromEncryptedPayload (x: CSharp.Model.Crypto.Symmetric.Rijndael.IEncryptedPayload) : EncryptedPayload =
+                    {Value = x.Value}
+                let private toEncryptedPayload (x: EncryptedPayload) = 
+                    CSharp.Model.Crypto.Symmetric.Rijndael.EncryptedPayload(x.Value)
+                let private fromUnencryptedPayload (x: CSharp.Model.Crypto.Symmetric.Rijndael.IUnencryptedPayload) : UnencryptedPayload =
+                    {Value = x.Value}
+
+                /// Encrypts the provided payload
+                let encrypt payload (service: CryptoService) =
+                    match service.Encrypt(payload |> toUnencryptedPayload) |> toResult with
+                    | Success x -> x |> fromEncryptedPayload |> succeed
+                    | Failure error -> error |> fail
+                /// Decrypts the provided payload
+                let decrypt payload (service: CryptoService) =
+                    match service.Decrypt(payload |> toEncryptedPayload) |> toResult with
+                    | Success x -> x |> fromUnencryptedPayload |> succeed
+                    | Failure error -> error |> fail
+
+            module Key =
+                /// Creates a RandomSecretAndSaltProvider
+                let createKeyPairProvider = RandomSecretAndSaltProvider
+                /// Instruments the RandomSecretAndSaltProvider to utilize RijndaelManaged
+                let withRijndaelManaged (keyPairProvider: RandomSecretAndSaltProvider) =
+                    keyPairProvider.WithRijndaelManaged()
+                /// Creates a key pair
+                let generateKeyPair (keyPairProvider: RandomSecretAndSaltProvider) =
+                    match keyPairProvider.GenerateKeyPair() |> toResult with
+                    | Success (x, y) ->
+                        (x |> fromSecret, y |> fromSalt) |> succeed
+                    | Failure error -> error |> fail
+
+            module Default =
+
+                module Data =
+                    let internal service = new CryptoService()
+                    /// Instruments the CryptoService to utilize RijndaelCryptoServiceProvider
+                    let WithRijndaelManaged() =
+                        service.WithRijndaelManaged()
 
                     /// Encrypts the provided payload
                     let encrypt payload = service |> Data.encrypt payload
