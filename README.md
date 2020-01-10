@@ -14,10 +14,10 @@ Hashing is supported by the ```HashService``` class, that lives in the namespace
 
 ``` csharp
 public interface IHashService
-    {
-        Result<IHash> ComputeHash(IPayload payload);
-        IHashService WithAlgorithm(HashAlgorithm algorithm);
-    }
+{
+    Result<IHash> ComputeHash(IPayload payload);
+    IHashService WithAlgorithm(HashAlgorithm algorithm);
+}
 ```
 
 Where the two *model* types ```IHash``` and ```IPayload``` are simple placeholders of byte arrays:
@@ -81,14 +81,11 @@ Encryption is supported by the type ```CryptoService``` in the namespace ```SFX.
 ``` csharp
 public interface ICryptoService
 {
-     public interface ICryptoService
-    {
-        Result<IEncryptedPayload> Encrypt(IUnencryptedPayload payload);
-        Result<IUnencryptedPayload> Decrypt(IEncryptedPayload payload);
-        ICryptoService WithAlgorihm(System.Security.Cryptography.RSA algorithm);
-        ICryptoService WithEncryptionKey(IEncryptionKey key);
-        ICryptoService WithDeryptionKey(IDecryptionKey key);
-    }
+    Result<IEncryptedPayload> Encrypt(IUnencryptedPayload payload);
+    Result<IUnencryptedPayload> Decrypt(IEncryptedPayload payload);
+    ICryptoService WithAlgorihm(System.Security.Cryptography.RSA algorithm);
+    ICryptoService WithEncryptionKey(IEncryptionKey key);
+    ICryptoService WithDeryptionKey(IDecryptionKey key);
 }
 ```
 
@@ -144,13 +141,13 @@ Encryption is supported by the types ```CryptoService``` in the namespaces ```SF
 
 ``` csharp
 public interface ICryptoService
-    {
-        Result<IEncryptedPayload> Encrypt(IUnencryptedPayload payload);
-        Result<IUnencryptedPayload> Decrypt(IEncryptedPayload payload);
-        ICryptoService WithAlgorihm(System.Security.Cryptography.Aes algorithm);
-        ICryptoService WithSecret(ISecret secret);
-        ICryptoService WithSalt(ISalt salt);
-    }
+{
+    Result<IEncryptedPayload> Encrypt(IUnencryptedPayload payload);
+    Result<IUnencryptedPayload> Decrypt(IEncryptedPayload payload);
+    ICryptoService WithAlgorihm(System.Security.Cryptography.Aes algorithm);
+    ICryptoService WithSecret(ISecret secret);
+    ICryptoService WithSalt(ISalt salt);
+}
 ```
 
 Where the parameeters should be very obvious (they extend ```IValidatable``` apart from the algoritm); in the Rijndael namespace, the algorithm of course extend ```System.Security.Cryptography.Aes```. 
