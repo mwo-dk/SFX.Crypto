@@ -18,8 +18,8 @@ namespace SFX.Crypto.CSharp.Infrastructure.Signature
         {
             if (IsDisposed())
                 return Fail<ISignature>(new ObjectDisposedException(typeof(SignatureService).Name));
-            if (!IsServiceSetUp())
-                return Fail<ISignature>(new InvalidOperationException("Service not properly set up. Hash algorithm and padding must be set"));
+            if (!IsServiceSetUpForSigning())
+                return Fail<ISignature>(new InvalidOperationException("Service not properly set up. Hash algorithm, padding and signing key must be set"));
             if (payload is null)
                 return Fail<ISignature>(new ArgumentNullException(nameof(payload)));
             if (!payload.IsValid())
@@ -41,8 +41,8 @@ namespace SFX.Crypto.CSharp.Infrastructure.Signature
         {
             if (IsDisposed())
                 return Fail<ISignature>(new ObjectDisposedException(typeof(SignatureService).Name));
-            if (!IsServiceSetUp())
-                return Fail<ISignature>(new InvalidOperationException("Service not properly set up. Hash algorithm and padding must be set"));
+            if (!IsServiceSetUpForSigning())
+                return Fail<ISignature>(new InvalidOperationException("Service not properly set up. Hash algorithm, padding and signing key must be set"));
             if (hash is null)
                 return Fail<ISignature>(new ArgumentNullException(nameof(hash)));
             if (!hash.IsValid())
@@ -64,8 +64,8 @@ namespace SFX.Crypto.CSharp.Infrastructure.Signature
         {
             if (IsDisposed())
                 return Fail<bool>(new ObjectDisposedException(typeof(SignatureService).Name));
-            if (!IsServiceSetUp())
-                return Fail<bool>(new InvalidOperationException("Service not properly set up. Hash algorithm and padding must be set"));
+            if (!IsServiceSetUpForVerification())
+                return Fail<bool>(new InvalidOperationException("Service not properly set up. Hash algorithm, padding and verification key must be set"));
             if (payload is null)
                 return Fail<bool>(new ArgumentNullException(nameof(signature)));
             if (!payload.IsValid())
@@ -91,8 +91,8 @@ namespace SFX.Crypto.CSharp.Infrastructure.Signature
         {
             if (IsDisposed())
                 return Fail<bool>(new ObjectDisposedException(typeof(SignatureService).Name));
-            if (!IsServiceSetUp())
-                return Fail<bool>(new InvalidOperationException("Service not properly set up. Hash algorithm and padding must be set"));
+            if (!IsServiceSetUpForVerification())
+                return Fail<bool>(new InvalidOperationException("Service not properly set up. Hash algorithm, padding and verification key must be set"));
             if (hash is null)
                 return Fail<bool>(new ArgumentNullException(nameof(signature)));
             if (!hash.IsValid())
@@ -113,10 +113,14 @@ namespace SFX.Crypto.CSharp.Infrastructure.Signature
             }
         }
 
-        private bool IsServiceSetUp() =>
+        private bool IsServiceSetUpForSigning() =>
             IsValidHashAlgoritmSet &&
             IsValidPaddingSet &&
-            IsValidSigningKeySet &&
+            IsValidSigningKeySet;
+
+        private bool IsServiceSetUpForVerification() =>
+            IsValidHashAlgoritmSet &&
+            IsValidPaddingSet &&
             IsValidVerificationKeySet;
 
         internal RSACryptoServiceProvider Algorithm =
@@ -176,7 +180,7 @@ namespace SFX.Crypto.CSharp.Infrastructure.Signature
                 throw new ArgumentNullException(nameof(signingKey));
             if (!signingKey.IsValid())
                 throw new ArgumentException("Signing key is not valid");
-            Algorithm.ImportRSAPublicKey(signingKey.Value, out var _);
+            Algorithm.ImportRSAPrivateKey(signingKey.Value, out var _);
             IsValidSigningKeySet = true;
             return this;
         }
@@ -190,7 +194,7 @@ namespace SFX.Crypto.CSharp.Infrastructure.Signature
                 throw new ArgumentNullException(nameof(verificationKey));
             if (!verificationKey.IsValid())
                 throw new ArgumentException("Verification key is not valid");
-            Algorithm.ImportRSAPrivateKey(verificationKey.Value, out var _);
+            Algorithm.ImportRSAPublicKey(verificationKey.Value, out var _);
             IsValidVerificationKeySet = true;
             return this;
         }

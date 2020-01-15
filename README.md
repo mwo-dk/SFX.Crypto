@@ -211,7 +211,7 @@ Where again the verious model types are byte-array holders, that implement ```IV
 
 * Hash algorithm. One of the methods ```WithSHA1```,  ```WithHA256```, ```WithSHA384```, ```WithSHA512```or ```WithMD5``` need to be invoked (again: **once** before first invokation). The methods have the signature ```unit/void -> SignatureService```.
 * Signature padding. One of the methods ```WithPkcs1``` or ```WithPss``` must be invoked, and the reason should be clear.
-* Signing and verification keys must also be provided, and these must be a valid public and private key pair for the ```RSACryptoServiceProvider```. These keys are set up via the methods ```WithSigningKey``` and ```WithVerificationKey``` respectively.
+* Signing and verification keys must also be provided, and these must be a valid private and public key pair for the ```RSACryptoServiceProvider```. These keys are set up via the methods ```WithSigningKey``` and ```WithVerificationKey``` respectively.
 
 #### RandomKeyPairProvider
 
@@ -578,8 +578,8 @@ Before utilizing the service, one needs to:
 
 * Set up the hashing algorithm to utilize.
 * Set up the padding mode.
-* Set the signing (public) key - must work with ```RSACryptoServiceProvider```.
-* Set the verification (private) key - must work with ```RSACryptoServiceProvider```.
+* Set the signing (private) key - must work with ```RSACryptoServiceProvider```.
+* Set the verification (public) key - must work with ```RSACryptoServiceProvider```.
 
 To set up the hashing algorithm, one of the following functions ```withSHA1```,  ```withSHA256```, ```withSHA384```, ```withSHA512``` or ```withMD5```, that all have the signature ```SignatureService -> SignatureService```.
 

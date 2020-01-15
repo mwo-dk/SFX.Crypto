@@ -9,14 +9,14 @@ namespace SFX.Crypto.CSharp.Infrastructure.Signature
     /// for <see cref="EncryptionKey"/> and <see cref="DecryptionKey"/> respectively
     /// </summary>
     public sealed class RandomKeyPairProvider :
-        RandomKeyPairProviderBase<SigningKey, VerificationKey>
+        RandomKeyPairProviderBase<VerificationKey, SigningKey>
     {
         /// <summary>
         /// Constructor
         /// </summary>
         public RandomKeyPairProvider() :
-            base(x => new SigningKey(x), x => new VerificationKey(x)) =>
+            base(x => new VerificationKey(x), x => new SigningKey(x)) =>
             RandomKeyPairProviderExtensions
-                .WithAlgorithm<RandomKeyPairProvider, SigningKey, VerificationKey>(this, new RSACryptoServiceProvider());
+                .WithAlgorithm<RandomKeyPairProvider, VerificationKey, SigningKey>(this, new RSACryptoServiceProvider());
     }
 }

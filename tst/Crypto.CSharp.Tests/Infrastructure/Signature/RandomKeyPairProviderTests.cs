@@ -21,7 +21,7 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
         #region Type tests
         [Fact]
         public void RandomKeyPairProviderImplementsIRandomKeyPairProvider() =>
-            Assert.True(typeof(IRandomKeyPairProvider<SigningKey, VerificationKey>).IsAssignableFrom(typeof(RandomKeyPairProvider)));
+            Assert.True(typeof(IRandomKeyPairProvider<VerificationKey, SigningKey>).IsAssignableFrom(typeof(RandomKeyPairProvider)));
 
         [Fact]
         public void RandomKeyPairProviderIsSealed() =>
