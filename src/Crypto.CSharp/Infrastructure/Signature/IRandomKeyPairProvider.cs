@@ -12,6 +12,6 @@ namespace SFX.Crypto.CSharp.Infrastructure.Signature
         /// Generates a random key pair for RSA signing and verification
         /// </summary>
         /// <returns></returns>
-        Result<(ISigningKey SigningKey, IVerificationKey VerificationKey)> GenerateKeyPair();
+        Result<(IVerificationKey VerificationKey, ISigningKey SigningKey)> GenerateKeyPair();
     }
 }

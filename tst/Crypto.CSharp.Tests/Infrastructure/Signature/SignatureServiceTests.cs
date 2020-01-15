@@ -15,11 +15,9 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
     {
         #region Members
         private readonly RandomKeyPairProvider _keyProvider;
-        private readonly SFX.Crypto.CSharp.Model.Signature.IPayload _payload;
-        private readonly SFX.Crypto.CSharp.Model.Signature.IHash _hash;
+        private readonly IPayload _payload;
+        private readonly IHash _hash;
         private readonly ISignature _signature;
-        private readonly ISigningKey _signingKey;
-        private readonly IVerificationKey _verificationKey;
         #endregion
 
         #region Test initialization
@@ -29,8 +27,6 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
             _payload = Fake<IPayload>();
             _hash = Fake<IHash>();
             _signature = Fake<ISignature>();
-            _signingKey = Fake<ISigningKey>();
-            _verificationKey = Fake<IVerificationKey>();
         }
         #endregion
 
@@ -341,22 +337,28 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
         #endregion
 
         #region Roundtrip works
+        #region Payload
         [Property]
         public Property RoundtripForSigningDataWorks(NonEmptyString data)
         {
             var (publicKey, privateKey) = CreateKeyPair();
             var payload = new Payload(Encoding.UTF8.GetBytes(data.Get));
-            var sut = Create(publicKey, privateKey);
+            var sut = new SignatureService().WithSHA512().WithSigningKey(privateKey).WithPkcs1();
 
             var (signOk, signature, signError) =
                 sut.SignPayload(payload);
+
+            sut.WithVerificationKey(publicKey);
+
             var (verifyOk, result, verifyError) =
                 sut.VerifyPayload(payload, signature);
 
             return (signOk && signError is null && !(signature is null) &&
                 verifyOk && verifyError is null && result).ToProperty();
         }
+        #endregion
 
+        #region Hash
         [Property]
         public Property RoundtripForSigningHashWorks(NonEmptyString data)
         {
@@ -366,10 +368,13 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
                 new HashService().WithSHA512CryptoServiceProvider();
             var hash_ = hashService.ComputeHash(payload);
             var hash = new SFX.Crypto.CSharp.Model.Signature.Hash(hash_.Value.Value);
-            var sut = Create(publicKey, privateKey);
+            var sut = new SignatureService().WithSHA512().WithSigningKey(privateKey).WithPkcs1();
 
             var (signOk, signature, signError) =
                 sut.SignHash(hash);
+
+            sut.WithVerificationKey(publicKey);
+
             var (verifyOk, result, verifyError) =
                 sut.VerifyHash(hash, signature);
 
@@ -377,22 +382,17 @@ namespace Crypto.CSharp.Tests.Infrastructure.Signature
                 verifyOk && verifyError is null && result).ToProperty();
         }
         #endregion
+        #endregion
 
         #region Helpers
-        private SignatureService Create() =>
+        private SignatureService Create(IVerificationKey verificationKey, ISigningKey signingKey) =>
             new SignatureService()
             .WithSHA512()
             .WithPkcs1()
-            .WithSigningKey(_signingKey)
-            .WithVerificationKey(_verificationKey);
-        private SignatureService Create(ISigningKey signingKey, IVerificationKey verificationKey) =>
-            new SignatureService()
-            .WithSHA512()
-            .WithPkcs1()
-            .WithSigningKey(signingKey)
-            .WithVerificationKey(verificationKey);
+            .WithVerificationKey(verificationKey)
+            .WithSigningKey(signingKey);
 
-        private (SigningKey Public, VerificationKey Private) CreateKeyPair() =>
+        private (VerificationKey Verification, SigningKey Signing) CreateKeyPair() =>
             _keyProvider.GenerateKeyPair();
         #endregion
     }
